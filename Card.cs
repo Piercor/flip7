@@ -11,6 +11,16 @@ class Card
     Value = value;
     CardType = cardType;
   }
-
+  public string CardInfo()
+  {
+    if (CardType == CardType.Action)
+    {
+      return $"{Name}";
+    }
+    else
+    {
+      return $"{Value}\n{Name}";
+    }
+  }
 }
 
