@@ -1,2 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using App;
+
+Deck newDeck = new();
+
+foreach (Card card in newDeck.CardList)
+{
+  Console.WriteLine($"\n{card.CardInfo()}");
+}
+
+Console.ReadLine();
