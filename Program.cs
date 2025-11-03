@@ -133,9 +133,10 @@ while (isRunning)
               int normalCardCount = 0;
               foreach (Card card in player.PlayerCards)
               {
-                if (drawnCard.CardType == CardType.Normal && card.Value == drawnCard.Value)
+                if (drawnCard.CardType == CardType.Normal && card.CardType == CardType.Normal && card.Value == drawnCard.Value)
                 {
-                  Console.WriteLine("\nB U S T E D!");
+                  Console.WriteLine("\nB U S T E D !");
+                  Console.Write("\nPress ENTER to continue. ");
                   Console.ReadLine();
                   player.PlayerCards.Add(drawnCard);
                   player.Active = false;
@@ -156,6 +157,10 @@ while (isRunning)
                   player.Score += player.CountScore();
                   player.Score += 15;
                   Console.WriteLine("\n F L I P  7 !");
+                  Console.WriteLine($"\nYour score this round is {player.CountScore()}");
+                  Console.WriteLine($"Your total score is {player.Score}");
+                  Console.Write("\nPress ENTER to continue. ");
+                  Console.ReadLine();
                   player.Active = false;
                 }
                 playing = false;
@@ -166,6 +171,10 @@ while (isRunning)
               player.Score += player.CountScore();
               playing = false;
               player.Active = false;
+              Console.WriteLine($"\nYour score this round is {player.CountScore()}");
+              Console.WriteLine($"Your total score is {player.Score}");
+              Console.Write("\nPress ENTER to continue. ");
+              Console.ReadLine();
               break;
             default:
               break;
