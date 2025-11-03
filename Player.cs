@@ -18,4 +18,14 @@ class Player
   {
     return $"Player: {Name} || Score: {Score}";
   }
+
+  public int CountScore()
+  {
+    int score = 0;
+    foreach (Card card in PlayerCards)
+    {
+      score += card.Value;
+    }
+    return score;
+  }
 }
