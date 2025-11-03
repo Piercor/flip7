@@ -13,13 +13,13 @@ class Card
   }
   public string CardInfo()
   {
-    if (CardType == CardType.Action)
+    if (CardType == CardType.Normal)
     {
-      return $"{Name}";
+      return $"| {Value} |";
     }
     else
     {
-      return $"{Value}\n{Name}";
+      return $"| {Name} |";
     }
   }
 }
