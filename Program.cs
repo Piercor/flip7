@@ -72,6 +72,17 @@ while (isRunning)
       player.PlayerCards.Clear();
     }
 
+    if (roundCount > 1)
+    {
+      Console.WriteLine($"\nScores after round {roundCount - 1}.\n");
+      foreach (Player player1 in playersList)
+      {
+        Console.WriteLine(player1.PlayerInfo());
+      }
+      Console.Write("\nPress ENTER to start next round. ");
+      Console.ReadLine();
+    }
+
     /* TEST CODE
     foreach (Card discard in deck.DiscardList)
     { Console.WriteLine(discard.CardInfo()); }
@@ -142,6 +153,8 @@ while (isRunning)
                 player.PlayerCards.Add(drawnCard);
                 if (normalCardCount == 7)
                 {
+                  player.Score += player.CountScore();
+                  player.Score += 15;
                   Console.WriteLine("\n F L I P  7 !");
                   player.Active = false;
                 }
@@ -150,6 +163,7 @@ while (isRunning)
               }
               break;
             case "s":
+              player.Score += player.CountScore();
               playing = false;
               player.Active = false;
               break;
