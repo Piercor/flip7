@@ -16,8 +16,4 @@ class Player
   {
     return $"Player: {Name} || Score: {Score}";
   }
-  public void CreatePlayer(string name)
-  {
-    Player newPlayer = new(name, 0);
-  }
 }
