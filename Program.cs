@@ -53,68 +53,99 @@ while (isRunning)
   Console.ReadLine();
 
   bool inGame = true;
+  int roundCount = 0;
 
   while (inGame)
   {
-
-    foreach (Player player in playersList)
+    bool round = true;
+    roundCount++;
+    while (round)
     {
-      bool playing = true;
-      while (playing)
+      foreach (Player player in playersList)
       {
-        TryClear();
-        int roundCount = 1;
-        Console.WriteLine($"\nRound {roundCount}.\n");
-        Console.WriteLine($"\n{player.Name}'s turn.\n");
-        Console.WriteLine("\nYour cards:");
-        foreach (Card normalCard in player.PlayerCards)
+        bool playing = false;
+        if (player.Active == true)
         {
-          if (normalCard.CardType == CardType.Normal)
-          { Console.Write($" {normalCard.CardInfo()}"); }
+          playing = true;
         }
-        Console.WriteLine("");
-        foreach (Card modifierCard in player.PlayerCards)
+
+        while (playing)
         {
-          if (modifierCard.CardType == CardType.Modifier)
-          { Console.Write($" {modifierCard.CardInfo()}"); }
-        }
-        Console.WriteLine("");
-        foreach (Card actionCard in player.PlayerCards)
-        {
-          if (actionCard.CardType == CardType.Action)
-          { Console.Write($" {actionCard.CardInfo()}"); }
-        }
-        Console.WriteLine("");
-        Console.Write("\n[D]raw | [S]tay: ");
-        switch (Console.ReadLine()?.ToLower())
-        {
-          case "d":
-            Card? drawnCard = deck.CardList[RandomCard()];
-            Console.WriteLine($"\n {drawnCard.CardInfo()} \n");
-            deck.CardList.Remove(drawnCard);
-            foreach (Card card in player.PlayerCards)
-            {
-              if (drawnCard.CardType == CardType.Normal && card.Value == drawnCard.Value)
+          TryClear();
+          Console.WriteLine($"\nRound {roundCount}.\n");
+          Console.WriteLine($"\n{player.Name}'s turn.\n");
+          Console.WriteLine("\nYour cards:");
+          foreach (Card normalCard in player.PlayerCards)
+          {
+            if (normalCard.CardType == CardType.Normal)
+            { Console.Write($" {normalCard.CardInfo()}"); }
+          }
+          Console.WriteLine("");
+          foreach (Card modifierCard in player.PlayerCards)
+          {
+            if (modifierCard.CardType == CardType.Modifier)
+            { Console.Write($" {modifierCard.CardInfo()}"); }
+          }
+          Console.WriteLine("");
+          foreach (Card actionCard in player.PlayerCards)
+          {
+            if (actionCard.CardType == CardType.Action)
+            { Console.Write($" {actionCard.CardInfo()}"); }
+          }
+          Console.WriteLine("");
+          Console.Write("\n[D]raw | [S]tay: ");
+          switch (Console.ReadLine()?.ToLower())
+          {
+            case "d":
+              Card? drawnCard = deck.CardList[RandomCard()];
+              Console.WriteLine($"\n {drawnCard.CardInfo()} \n");
+              deck.CardList.Remove(drawnCard);
+              foreach (Card card in player.PlayerCards)
               {
-                Console.WriteLine("\nB U S T E D!");
-                Console.ReadLine();
-                playing = false;
-                break;
+                if (drawnCard.CardType == CardType.Normal && card.Value == drawnCard.Value)
+                {
+                  Console.WriteLine("\nB U S T E D!");
+                  Console.ReadLine();
+                  player.Active = false;
+                  playing = false;
+                  break;
+                }
               }
-            }
-            if (playing)
-            {
-              player.PlayerCards.Add(drawnCard);
-            }
-            break;
-          case "s":
-            playing = false;
-            break;
-          default:
-            break;
+              if (playing)
+              {
+                //player.Active = false;
+                player.PlayerCards.Add(drawnCard);
+                playing = false;
+                Console.ReadLine();
+              }
+              break;
+            case "s":
+              playing = false;
+              player.Active = false;
+              break;
+            default:
+              break;
+          }
         }
       }
+      bool activePlayers = false;
+      foreach (Player player in playersList)
+      {
+        if (player.Active == true)
+        {
+          activePlayers = true;
+        }
+      }
+      if (!activePlayers)
+      {
+        round = false;
+      }
     }
+    foreach (Player player in playersList)
+    {
+      player.Active = true;
+    }
+    continue;
   }
 }
 
