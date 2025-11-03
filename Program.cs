@@ -42,8 +42,81 @@ while (isRunning)
   {
     Console.Write("\nInvalid input. "); Console.ReadLine();
   }
-}
 
+  TryClear();
+  Console.WriteLine("\nLet's play!\n");
+  for (int i = 0; i < playersList.Count; ++i)
+  {
+    Console.WriteLine($"{playersList[i].Name}");
+  }
+  Console.Write("\nPress ENTER when ready to play. ");
+  Console.ReadLine();
+
+  bool inGame = true;
+
+  while (inGame)
+  {
+
+    foreach (Player player in playersList)
+    {
+      bool playing = true;
+      while (playing)
+      {
+        TryClear();
+        int roundCount = 1;
+        Console.WriteLine($"\nRound {roundCount}.\n");
+        Console.WriteLine($"\n{player.Name}'s turn.\n");
+        Console.WriteLine("\nYour cards:");
+        foreach (Card normalCard in player.PlayerCards)
+        {
+          if (normalCard.CardType == CardType.Normal)
+          { Console.Write($" {normalCard.CardInfo()}"); }
+        }
+        Console.WriteLine("");
+        foreach (Card modifierCard in player.PlayerCards)
+        {
+          if (modifierCard.CardType == CardType.Modifier)
+          { Console.Write($" {modifierCard.CardInfo()}"); }
+        }
+        Console.WriteLine("");
+        foreach (Card actionCard in player.PlayerCards)
+        {
+          if (actionCard.CardType == CardType.Action)
+          { Console.Write($" {actionCard.CardInfo()}"); }
+        }
+        Console.WriteLine("");
+        Console.Write("\n[D]raw | [S]tay: ");
+        switch (Console.ReadLine()?.ToLower())
+        {
+          case "d":
+            Card? drawnCard = deck.CardList[RandomCard()];
+            Console.WriteLine($"\n {drawnCard.CardInfo()} \n");
+            deck.CardList.Remove(drawnCard);
+            foreach (Card card in player.PlayerCards)
+            {
+              if (drawnCard.CardType == CardType.Normal && card.Value == drawnCard.Value)
+              {
+                Console.WriteLine("\nB U S T E D!");
+                Console.ReadLine();
+                playing = false;
+                break;
+              }
+            }
+            if (playing)
+            {
+              player.PlayerCards.Add(drawnCard);
+            }
+            break;
+          case "s":
+            playing = false;
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+}
 
 
 /* TEST CODE
