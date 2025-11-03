@@ -5,7 +5,7 @@ namespace App;
 class Deck
 {
   public List<Card> CardList = new();
-
+  public List<Card> DiscardList = new();
   public Deck()
   {
     Debug.Assert(CardList != null);
