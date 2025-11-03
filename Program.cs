@@ -59,6 +59,25 @@ while (isRunning)
   {
     bool round = true;
     roundCount++;
+
+    foreach (Player player in playersList)
+    {
+      if (player.PlayerCards.Count > 0)
+      {
+        foreach (Card card in player.PlayerCards)
+        {
+          deck.DiscardList.Add(card);
+        }
+      }
+      player.PlayerCards.Clear();
+    }
+
+    /* TEST CODE
+    foreach (Card discard in deck.DiscardList)
+    { Console.WriteLine(discard.CardInfo()); }
+    Console.Write("\n>>>");
+    Console.ReadLine(); */
+
     while (round)
     {
       foreach (Player player in playersList)
@@ -100,21 +119,32 @@ while (isRunning)
               Card? drawnCard = deck.CardList[RandomCard()];
               Console.WriteLine($"\n {drawnCard.CardInfo()} \n");
               deck.CardList.Remove(drawnCard);
+              int normalCardCount = 0;
               foreach (Card card in player.PlayerCards)
               {
                 if (drawnCard.CardType == CardType.Normal && card.Value == drawnCard.Value)
                 {
                   Console.WriteLine("\nB U S T E D!");
                   Console.ReadLine();
+                  player.PlayerCards.Add(drawnCard);
                   player.Active = false;
                   playing = false;
                   break;
                 }
+                if (drawnCard.CardType == CardType.Normal)
+                {
+                  normalCardCount++;
+                }
               }
+
               if (playing)
               {
-                //player.Active = false;
                 player.PlayerCards.Add(drawnCard);
+                if (normalCardCount == 7)
+                {
+                  Console.WriteLine("\n F L I P  7 !");
+                  player.Active = false;
+                }
                 playing = false;
                 Console.ReadLine();
               }
