@@ -1,10 +1,22 @@
 ﻿using App;
 
-Deck newDeck = new();
+Deck deck = new();
 
-foreach (Card card in newDeck.CardList)
-{
-  Console.WriteLine($"\n{card.CardInfo()}");
-}
+Card drawnCard = deck.CardList[RandomCard()];
+
+Console.WriteLine($"{drawnCard.CardInfo()}");
+
+drawnCard = deck.CardList[RandomCard()];
+
+Console.WriteLine($"{drawnCard.CardInfo()}");
 
 Console.ReadLine();
+
+
+// Method to draw a random card.
+int RandomCard()
+{
+  Random rnd = new();
+
+  return rnd.Next(deck.CardList.Count);
+}
