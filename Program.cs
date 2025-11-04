@@ -113,13 +113,15 @@ while (isRunning)
           Console.WriteLine("");
           foreach (Card modifierCard in player.PlayerCards)
           {
-            if (modifierCard.CardType == CardType.Modifier)
+            if (modifierCard.CardType == CardType.Modifier || modifierCard.CardType == CardType.Double)
             { Console.Write($" {modifierCard.CardInfo()}"); }
           }
           Console.WriteLine("");
           foreach (Card actionCard in player.PlayerCards)
           {
-            if (actionCard.CardType == CardType.Action)
+            /* When Second Chance, Freeze and Flip Three have functionality, here would be only be "CardType.SecondChance",
+            because FlipThree and Freeze can't be stored */
+            if (actionCard.CardType == CardType.SecondChance || actionCard.CardType == CardType.Freeze || actionCard.CardType == CardType.FlipThree)
             { Console.Write($" {actionCard.CardInfo()}"); }
           }
           Console.WriteLine("");
