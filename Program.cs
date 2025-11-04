@@ -53,12 +53,14 @@ while (isRunning)
   Console.Write("\nPress ENTER when ready to play. ");
   Console.ReadLine();
 
+  bool scoreBoard = true;
   bool inGame = true;
   int roundCount = 0;
 
   while (inGame)
   {
     bool round = true;
+
     roundCount++;
 
     foreach (Player player in playersList)
@@ -92,7 +94,6 @@ while (isRunning)
 
     while (round)
     {
-      bool scoreBoard = true;
       foreach (Player player in playersList)
       {
         bool playing = false;
@@ -120,7 +121,7 @@ while (isRunning)
           Console.WriteLine("");
           foreach (Card actionCard in player.PlayerCards)
           {
-            /* When Second Chance, Freeze and Flip Three have functionality, here would be only be
+            /* When Second Chance, Freeze and Flip Three have functionality, here would only be
             "CardType.SecondChance", because FlipThree and Freeze can't be stored */
             if (actionCard.CardType == CardType.SecondChance || actionCard.CardType == CardType.Freeze || actionCard.CardType == CardType.FlipThree)
             { Console.Write($" {actionCard.CardInfo()}"); }
@@ -137,13 +138,15 @@ while (isRunning)
               Console.WriteLine($"{player1.Name}: {player1.Score}");
             }
           }
-          Console.Write("▶ ");
+          Console.Write("\n▶ ");
 
-          switch (Console.ReadLine()?.ToLower())
+          switch (Console.ReadKey().Key)
           {
-            case "d":
+            case ConsoleKey.D:
               Card? drawnCard = deck.CardList[RandomCard()];
-              Console.WriteLine($"\n {drawnCard.CardInfo()} \n");
+              Console.WriteLine($"");
+              Console.WriteLine($"\nDrawn card:");
+              Console.WriteLine($"\n {drawnCard.CardInfo()}");
               deck.CardList.Remove(drawnCard);
               int normalCardCount = 0;
               foreach (Card card in player.PlayerCards)
@@ -179,10 +182,9 @@ while (isRunning)
                   player.Active = false;
                 }
                 playing = false;
-                Console.ReadLine();
               }
               break;
-            case "s":
+            case ConsoleKey.S:
               player.Score += player.CountScore();
               playing = false;
               player.Active = false;
@@ -192,13 +194,28 @@ while (isRunning)
               Console.ReadLine();
               break;
 
-            case "t":
+            case ConsoleKey.T:
               if (!scoreBoard) { scoreBoard = true; }
               else { scoreBoard = false; }
               break;
-
-            default:
-              break;
+          }
+        }
+        if (player.Active)
+        {
+          Console.WriteLine("\n[C]ontinue or [S]tay?");
+          Console.Write("\n▶ ");
+          switch (Console.ReadKey().Key)
+          {
+            case ConsoleKey.C: continue;
+            case ConsoleKey.S:
+              player.Score += player.CountScore();
+              playing = false;
+              player.Active = false;
+              Console.WriteLine($"\nYour score this round is {player.CountScore()}");
+              Console.WriteLine($"Your total score is {player.Score}");
+              Console.Write("\nPress ENTER to continue. ");
+              Console.ReadLine();
+              continue;
           }
         }
       }
