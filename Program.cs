@@ -1,4 +1,5 @@
-﻿using App;
+﻿using System.Data;
+using App;
 
 Deck deck = new();
 List<Player> playersList = new();
@@ -91,6 +92,7 @@ while (isRunning)
 
     while (round)
     {
+      bool scoreBoard = true;
       foreach (Player player in playersList)
       {
         bool playing = false;
@@ -98,7 +100,6 @@ while (isRunning)
         {
           playing = true;
         }
-
         while (playing)
         {
           TryClear();
@@ -119,13 +120,25 @@ while (isRunning)
           Console.WriteLine("");
           foreach (Card actionCard in player.PlayerCards)
           {
-            /* When Second Chance, Freeze and Flip Three have functionality, here would be only be "CardType.SecondChance",
-            because FlipThree and Freeze can't be stored */
+            /* When Second Chance, Freeze and Flip Three have functionality, here would be only be
+            "CardType.SecondChance", because FlipThree and Freeze can't be stored */
             if (actionCard.CardType == CardType.SecondChance || actionCard.CardType == CardType.Freeze || actionCard.CardType == CardType.FlipThree)
             { Console.Write($" {actionCard.CardInfo()}"); }
           }
           Console.WriteLine("");
-          Console.Write("\n[D]raw | [S]tay: ");
+          Console.WriteLine("\n[D]raw | [S]tay | [T]oggle score board. ");
+
+          if (scoreBoard)
+          {
+            Console.WriteLine("");
+            Console.WriteLine("\nSCORE BOARD");
+            foreach (Player player1 in playersList)
+            {
+              Console.WriteLine($"{player1.Name}: {player1.Score}");
+            }
+          }
+          Console.Write("▶ ");
+
           switch (Console.ReadLine()?.ToLower())
           {
             case "d":
@@ -178,6 +191,12 @@ while (isRunning)
               Console.Write("\nPress ENTER to continue. ");
               Console.ReadLine();
               break;
+
+            case "t":
+              if (!scoreBoard) { scoreBoard = true; }
+              else { scoreBoard = false; }
+              break;
+
             default:
               break;
           }
