@@ -24,7 +24,24 @@ class Player
     int score = 0;
     foreach (Card card in PlayerCards)
     {
-      score += card.Value;
+      if (card.CardType == CardType.Normal)
+      {
+        score += card.Value;
+      }
+    }
+    foreach (Card card in PlayerCards)
+    {
+      if (card.CardType == CardType.Double)
+      {
+        score *= 2;
+      }
+    }
+    foreach (Card card in PlayerCards)
+    {
+      if (card.CardType == CardType.Modifier)
+      {
+        score += card.Value;
+      }
     }
     return score;
   }
