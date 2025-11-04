@@ -61,18 +61,19 @@ class Deck
     CardList.Add(new("+6", 6, CardType.Modifier));
     CardList.Add(new("+8", 8, CardType.Modifier));
     CardList.Add(new("+10", 10, CardType.Modifier));
+    CardList.Add(new("x2", 0, CardType.Double));
 
     for (int i = 0; i < 3; ++i)
     {
-      CardList.Add(new("Freeze", 0, CardType.Action));
+      CardList.Add(new("Freeze", 0, CardType.Freeze));
     }
     for (int i = 0; i < 3; ++i)
     {
-      CardList.Add(new("Flip Three", 0, CardType.Action));
+      CardList.Add(new("Flip Three", 0, CardType.FlipThree));
     }
     for (int i = 0; i < 3; ++i)
     {
-      CardList.Add(new("Second Chance", 0, CardType.Action));
+      CardList.Add(new("Second Chance", 0, CardType.SecondChance));
     }
   }
 }
