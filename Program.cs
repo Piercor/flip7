@@ -240,14 +240,7 @@ while (isRunning)
   }
 }
 
-
-/* TEST CODE
- Card drawnCard = deck.CardList[RandomCard()];
-Console.WriteLine($"{drawnCard.CardInfo()}");
-Console.ReadLine(); */
-
-
-// Method to draw a random card.
+// Method to clear console.
 void TryClear()
 {
   try { Console.Clear(); } catch { }
@@ -256,6 +249,7 @@ Player CreatePlayer(string name)
 {
   return new(name, 0);
 }
+// Method to draw a random card.
 int RandomCard()
 {
   Random rnd = new();
