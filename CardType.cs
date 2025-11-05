@@ -5,5 +5,8 @@ enum CardType
 {
   Normal,
   Modifier,
-  Action,
+  Double,
+  Freeze,
+  FlipThree,
+  SecondChance,
 }
