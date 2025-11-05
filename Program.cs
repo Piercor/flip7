@@ -68,6 +68,7 @@ while (isRunning)
 
     if (roundCount > 1)
     {
+      TryClear();
       Console.WriteLine($"\nScores after round {roundCount - 1}.\n");
       foreach (Player player1 in playersList)
       {
@@ -113,12 +114,13 @@ while (isRunning)
           }
           if (scoreBoard)
           {
-            Console.WriteLine("");
+            Console.WriteLine("\n------------------------------");
             Console.WriteLine("\nSCORE BOARD\n");
             foreach (Player player1 in playersList)
             {
               Console.WriteLine($"{player1.Name}: {player1.Score}");
             }
+            Console.WriteLine("\n------------------------------");
           }
 
           Console.WriteLine("");
@@ -166,11 +168,12 @@ while (isRunning)
               player.Score += player.CountScore();
               playing = false;
               player.Active = false;
-              player.EmptyPlayerCards(deck);
+              Console.WriteLine("");
               Console.WriteLine($"\nYour score this round is {player.CountScore()}");
               Console.WriteLine($"Your total score is {player.Score}");
               Console.Write("\nPress ENTER to continue. ");
               Console.ReadLine();
+              player.EmptyPlayerCards(deck);
               break;
 
             case ConsoleKey.T:
@@ -182,19 +185,20 @@ while (isRunning)
         if (player.Active)
         {
           Console.Write("\nPress [S] to stay or any other key to continue playing. ");
-          Console.WriteLine("");
+
           switch (Console.ReadKey().Key)
           {
             case ConsoleKey.C: continue;
             case ConsoleKey.S:
               player.Score += player.CountScore();
-              player.EmptyPlayerCards(deck);
               playing = false;
               player.Active = false;
+              Console.WriteLine("");
               Console.WriteLine($"\nYour score this round is {player.CountScore()}");
               Console.WriteLine($"Your total score is {player.Score}");
               Console.Write("\nPress ENTER to continue. ");
               Console.ReadLine();
+              player.EmptyPlayerCards(deck);
               continue;
           }
         }
