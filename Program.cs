@@ -66,18 +66,6 @@ while (isRunning)
     bool round = true;
     roundCount++;
 
-    if (roundCount > 1)
-    {
-      TryClear();
-      Console.WriteLine($"\nScores after round {roundCount - 1}.\n");
-      foreach (Player player1 in playersList)
-      {
-        Console.WriteLine(player1.PlayerInfo());
-      }
-      Console.Write("\nPress ENTER to start next round. ");
-      Console.ReadLine();
-    }
-
     while (round)
     {
       foreach (Player player in playersList)
@@ -221,6 +209,17 @@ while (isRunning)
     {
       player.Active = true;
     }
+
+    TryClear();
+    Console.WriteLine($"\nScores after round {roundCount}.\n");
+    foreach (Player player in playersList)
+    {
+      Console.WriteLine(player.PlayerInfo());
+    }
+    Console.Write("\nPress ENTER to start next round. ");
+    Console.ReadLine();
+
+
     continue;
   }
 }
