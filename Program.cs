@@ -44,8 +44,6 @@ while (isRunning)
     Console.Write("\nInvalid input. "); Console.ReadLine();
   }
 
-
-
   bool inGame = false;
   if (playersList.Count >= 3 && playersList.Count <= 10)
   {
@@ -66,7 +64,6 @@ while (isRunning)
   while (inGame)
   {
     bool round = true;
-
     roundCount++;
 
     if (roundCount > 1)
@@ -114,19 +111,18 @@ while (isRunning)
             if (actionCard.CardType == CardType.SecondChance || actionCard.CardType == CardType.Freeze || actionCard.CardType == CardType.FlipThree)
             { Console.Write($" {actionCard.CardInfo()}"); }
           }
-          Console.WriteLine("");
-          Console.Write("\n[D]raw | [S]tay | [T]oggle score board. ");
-
           if (scoreBoard)
           {
             Console.WriteLine("");
-            Console.WriteLine("\nSCORE BOARD");
+            Console.WriteLine("\nSCORE BOARD\n");
             foreach (Player player1 in playersList)
             {
               Console.WriteLine($"{player1.Name}: {player1.Score}");
             }
           }
+
           Console.WriteLine("");
+          Console.Write("\n[D]raw | [S]tay | [T]oggle score board. ");
 
           switch (Console.ReadKey().Key)
           {
@@ -202,6 +198,7 @@ while (isRunning)
               continue;
           }
         }
+
       }
       bool activePlayers = false;
       foreach (Player player in playersList)
