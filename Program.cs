@@ -44,17 +44,23 @@ while (isRunning)
     Console.Write("\nInvalid input. "); Console.ReadLine();
   }
 
-  TryClear();
-  Console.WriteLine("\nLet's play!\n");
-  for (int i = 0; i < playersList.Count; ++i)
+
+
+  bool inGame = false;
+  if (playersList.Count >= 3 && playersList.Count <= 10)
   {
-    Console.WriteLine($"{playersList[i].Name}");
+    inGame = true;
+    TryClear();
+    Console.WriteLine("\nLet's play!\n");
+    for (int i = 0; i < playersList.Count; ++i)
+    {
+      Console.WriteLine($"{playersList[i].Name}");
+    }
+    Console.Write("\nPress ENTER when ready to play. ");
+    Console.ReadLine();
   }
-  Console.Write("\nPress ENTER when ready to play. ");
-  Console.ReadLine();
 
   bool scoreBoard = true;
-  bool inGame = true;
   int roundCount = 0;
 
   while (inGame)
@@ -62,18 +68,6 @@ while (isRunning)
     bool round = true;
 
     roundCount++;
-
-    foreach (Player player in playersList)
-    {
-      if (player.PlayerCards.Count > 0)
-      {
-        foreach (Card card in player.PlayerCards)
-        {
-          deck.DiscardList.Add(card);
-        }
-      }
-      player.PlayerCards.Clear();
-    }
 
     if (roundCount > 1)
     {
@@ -85,12 +79,6 @@ while (isRunning)
       Console.Write("\nPress ENTER to start next round. ");
       Console.ReadLine();
     }
-
-    /* TEST CODE
-    foreach (Card discard in deck.DiscardList)
-    { Console.WriteLine(discard.CardInfo()); }
-    Console.Write("\n>>>");
-    Console.ReadLine(); */
 
     while (round)
     {
@@ -127,7 +115,7 @@ while (isRunning)
             { Console.Write($" {actionCard.CardInfo()}"); }
           }
           Console.WriteLine("");
-          Console.WriteLine("\n[D]raw | [S]tay | [T]oggle score board. ");
+          Console.Write("\n[D]raw | [S]tay | [T]oggle score board. ");
 
           if (scoreBoard)
           {
@@ -138,47 +126,41 @@ while (isRunning)
               Console.WriteLine($"{player1.Name}: {player1.Score}");
             }
           }
-          Console.Write("\n▶ ");
+          Console.WriteLine("");
 
           switch (Console.ReadKey().Key)
           {
             case ConsoleKey.D:
-              Card? drawnCard = deck.CardList[RandomCard()];
+              Card? drawnCard = deck.CardDeck[RandomCard()];
               Console.WriteLine($"");
               Console.WriteLine($"\nDrawn card:");
               Console.WriteLine($"\n {drawnCard.CardInfo()}");
-              deck.CardList.Remove(drawnCard);
-              int normalCardCount = 0;
-              foreach (Card card in player.PlayerCards)
-              {
-                if (drawnCard.CardType == CardType.Normal && card.CardType == CardType.Normal && card.Value == drawnCard.Value)
-                {
-                  Console.WriteLine("\nB U S T E D !");
-                  Console.Write("\nPress ENTER to continue. ");
-                  Console.ReadLine();
-                  player.PlayerCards.Add(drawnCard);
-                  player.Active = false;
-                  playing = false;
-                  break;
-                }
-                if (drawnCard.CardType == CardType.Normal)
-                {
-                  normalCardCount++;
-                }
-              }
+              deck.CardDeck.Remove(drawnCard);
 
+              if (player.CheckBusted(drawnCard))
+              {
+                Console.WriteLine("\nB U S T E D !");
+                Console.Write("\nPress ENTER to continue. ");
+                Console.ReadLine();
+                player.PlayerCards.Add(drawnCard);
+                player.EmptyPlayerCards(deck);
+                player.Active = false;
+                playing = false;
+                break;
+              }
               if (playing)
               {
                 player.PlayerCards.Add(drawnCard);
-                if (normalCardCount == 7)
+                if (player.CheckFlip7())
                 {
                   player.Score += player.CountScore();
                   player.Score += 15;
                   Console.WriteLine("\n F L I P  7 !");
-                  Console.WriteLine($"\nYour score this round is {player.CountScore()}");
+                  Console.WriteLine($"\nYour score this round is {player.CountScore() + 15}");
                   Console.WriteLine($"Your total score is {player.Score}");
                   Console.Write("\nPress ENTER to continue. ");
                   Console.ReadLine();
+                  player.EmptyPlayerCards(deck);
                   player.Active = false;
                 }
                 playing = false;
@@ -188,6 +170,7 @@ while (isRunning)
               player.Score += player.CountScore();
               playing = false;
               player.Active = false;
+              player.EmptyPlayerCards(deck);
               Console.WriteLine($"\nYour score this round is {player.CountScore()}");
               Console.WriteLine($"Your total score is {player.Score}");
               Console.Write("\nPress ENTER to continue. ");
@@ -202,13 +185,14 @@ while (isRunning)
         }
         if (player.Active)
         {
-          Console.WriteLine("\n[C]ontinue or [S]tay?");
-          Console.Write("\n▶ ");
+          Console.Write("\nPress [S] to stay or any other key to continue playing. ");
+          Console.WriteLine("");
           switch (Console.ReadKey().Key)
           {
             case ConsoleKey.C: continue;
             case ConsoleKey.S:
               player.Score += player.CountScore();
+              player.EmptyPlayerCards(deck);
               playing = false;
               player.Active = false;
               Console.WriteLine($"\nYour score this round is {player.CountScore()}");
@@ -254,5 +238,5 @@ int RandomCard()
 {
   Random rnd = new();
 
-  return rnd.Next(deck.CardList.Count);
+  return rnd.Next(deck.CardDeck.Count);
 }
