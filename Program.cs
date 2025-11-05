@@ -4,6 +4,7 @@ using App;
 Deck deck = new();
 List<Player> playersList = new();
 
+int pointsToReach = 200;
 bool isRunning = true;
 
 while (isRunning)
@@ -49,11 +50,20 @@ while (isRunning)
   {
     inGame = true;
     TryClear();
+    Console.WriteLine("\nPoints to reach? (200 by default)?");
+    Console.Write("▶ ");
+    if (int.TryParse(Console.ReadLine(), out int userPoints) && playersNumb > 2 && playersNumb <= 10)
+    {
+      pointsToReach = userPoints;
+    }
+
+    TryClear();
     Console.WriteLine("\nLet's play!\n");
     for (int i = 0; i < playersList.Count; ++i)
     {
       Console.WriteLine($"{playersList[i].Name}");
     }
+    Console.WriteLine($"\nPoints to reach: {pointsToReach}.");
     Console.Write("\nPress ENTER when ready to play. ");
     Console.ReadLine();
   }
@@ -190,7 +200,6 @@ while (isRunning)
               continue;
           }
         }
-
       }
       bool activePlayers = false;
       foreach (Player player in playersList)
@@ -205,11 +214,55 @@ while (isRunning)
         round = false;
       }
     }
+
+    bool winnerFound = false;
     foreach (Player player in playersList)
     {
       player.Active = true;
+      if (player.Score >= pointsToReach)
+      {
+        winnerFound = true;
+      }
     }
 
+    if (winnerFound)
+    {
+      for (int tries = 0; tries < playersList.Count; ++tries)
+      {
+        for (int i = 1; i < playersList.Count; ++i)
+        {
+          Player? current = playersList[i];
+          Player? prev = playersList[i - 1];
+          if (current.Score > prev.Score)
+          {
+            playersList[i] = prev;
+            playersList[i - 1] = current;
+          }
+        }
+      }
+      TryClear();
+      if (playersList[0].Score == playersList[1].Score)
+      {
+        Console.WriteLine("\nWe have a tie!");
+      }
+      else
+      {
+        Console.WriteLine("\nWe have a winner!");
+        Console.WriteLine($"\nContratulations, {playersList[0].Name}!");
+      }
+
+      Console.WriteLine($"\nFinal score board: \n");
+      for (int i = 0; i < playersList.Count; ++i)
+      {
+        Console.WriteLine($"[{i + 1}] {playersList[i].PlayerInfo()}");
+      }
+      Console.WriteLine("\nThanks for playing!");
+      Console.Write("\nPress ENTER to finish. ");
+      Console.ReadLine();
+      inGame = false;
+      isRunning = false;
+      break;
+    }
     TryClear();
     Console.WriteLine($"\nScores after round {roundCount}.\n");
     foreach (Player player in playersList)
@@ -219,8 +272,8 @@ while (isRunning)
     Console.Write("\nPress ENTER to start next round. ");
     Console.ReadLine();
 
-
     continue;
+
   }
 }
 
