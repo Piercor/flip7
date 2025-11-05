@@ -4,76 +4,76 @@ namespace App;
 
 class Deck
 {
-  public List<Card> CardList = new();
-  public List<Card> DiscardList = new();
+  public List<Card> CardDeck = new();
+  public List<Card> DiscardPile = new();
   public Deck()
   {
-    Debug.Assert(CardList != null);
+    Debug.Assert(CardDeck != null);
     for (int i = 0; i < 12; ++i)
     {
-      CardList.Add(new("Twelve", 12, CardType.Normal));
+      CardDeck.Add(new("Twelve", 12, CardType.Normal));
     }
     for (int i = 0; i < 11; ++i)
     {
-      CardList.Add(new("Eleven", 11, CardType.Normal));
+      CardDeck.Add(new("Eleven", 11, CardType.Normal));
     }
     for (int i = 0; i < 10; ++i)
     {
-      CardList.Add(new("Ten", 10, CardType.Normal));
+      CardDeck.Add(new("Ten", 10, CardType.Normal));
     }
     for (int i = 0; i < 9; ++i)
     {
-      CardList.Add(new("Nine", 9, CardType.Normal));
+      CardDeck.Add(new("Nine", 9, CardType.Normal));
     }
     for (int i = 0; i < 8; ++i)
     {
-      CardList.Add(new("Eight", 8, CardType.Normal));
+      CardDeck.Add(new("Eight", 8, CardType.Normal));
     }
     for (int i = 0; i < 7; ++i)
     {
-      CardList.Add(new("Seven", 7, CardType.Normal));
+      CardDeck.Add(new("Seven", 7, CardType.Normal));
     }
     for (int i = 0; i < 6; ++i)
     {
-      CardList.Add(new("Six", 6, CardType.Normal));
+      CardDeck.Add(new("Six", 6, CardType.Normal));
     }
     for (int i = 0; i < 5; ++i)
     {
-      CardList.Add(new("Five", 5, CardType.Normal));
+      CardDeck.Add(new("Five", 5, CardType.Normal));
     }
     for (int i = 0; i < 4; ++i)
     {
-      CardList.Add(new("Four", 4, CardType.Normal));
+      CardDeck.Add(new("Four", 4, CardType.Normal));
     }
     for (int i = 0; i < 3; ++i)
     {
-      CardList.Add(new("Three", 3, CardType.Normal));
+      CardDeck.Add(new("Three", 3, CardType.Normal));
     }
     for (int i = 0; i < 2; ++i)
     {
-      CardList.Add(new("Two", 2, CardType.Normal));
+      CardDeck.Add(new("Two", 2, CardType.Normal));
     }
-    CardList.Add(new("One", 1, CardType.Normal));
-    CardList.Add(new("Zero", 0, CardType.Normal));
+    CardDeck.Add(new("One", 1, CardType.Normal));
+    CardDeck.Add(new("Zero", 0, CardType.Normal));
 
-    CardList.Add(new("+2", 2, CardType.Modifier));
-    CardList.Add(new("+4", 4, CardType.Modifier));
-    CardList.Add(new("+6", 6, CardType.Modifier));
-    CardList.Add(new("+8", 8, CardType.Modifier));
-    CardList.Add(new("+10", 10, CardType.Modifier));
-    CardList.Add(new("x2", 0, CardType.Double));
+    CardDeck.Add(new("+2", 2, CardType.Modifier));
+    CardDeck.Add(new("+4", 4, CardType.Modifier));
+    CardDeck.Add(new("+6", 6, CardType.Modifier));
+    CardDeck.Add(new("+8", 8, CardType.Modifier));
+    CardDeck.Add(new("+10", 10, CardType.Modifier));
+    CardDeck.Add(new("x2", 0, CardType.Double));
 
     for (int i = 0; i < 3; ++i)
     {
-      CardList.Add(new("Freeze", 0, CardType.Freeze));
+      CardDeck.Add(new("Freeze", 0, CardType.Freeze));
     }
     for (int i = 0; i < 3; ++i)
     {
-      CardList.Add(new("Flip Three", 0, CardType.FlipThree));
+      CardDeck.Add(new("Flip Three", 0, CardType.FlipThree));
     }
     for (int i = 0; i < 3; ++i)
     {
-      CardList.Add(new("Second Chance", 0, CardType.SecondChance));
+      CardDeck.Add(new("Second Chance", 0, CardType.SecondChance));
     }
   }
 }
