@@ -101,7 +101,7 @@ while (isRunning)
           if (player.Active && activePlayersCount > 1)
           { Thread.Sleep(500); }
           Console.WriteLine("\nYour cards:\n");
-          ShowCards(player);
+          player.ShowCards();
           if (scoreBoard)
           {
             ShowScoreBoard(true);
@@ -141,7 +141,7 @@ while (isRunning)
           Console.WriteLine($"\nRound {roundCount}.\n");
           Console.WriteLine($"\n{player.Name}'s turn.\n");
           Console.WriteLine("\nYour cards:\n");
-          ShowCards(player);
+          player.ShowCards();
           if (scoreBoard)
           {
             ShowScoreBoard(true);
@@ -300,28 +300,6 @@ Player SelectedPlayer(Player player)
   Debug.Assert(selectedPlayer != null);
   return selectedPlayer;
 }
-// Method to show cards. Maybe move to player class later.
-void ShowCards(Player player)
-{
-  foreach (Card normalCard in player.PlayerCards)
-  {
-    if (normalCard.CardType == CardType.Normal)
-    { Console.Write($" {normalCard.CardInfo()}"); }
-  }
-  Console.WriteLine("");
-  foreach (Card modifierCard in player.PlayerCards)
-  {
-    if (modifierCard.CardType == CardType.Modifier || modifierCard.CardType == CardType.Double)
-    { Console.Write($" {modifierCard.CardInfo()}"); }
-  }
-  Console.WriteLine("");
-  foreach (Card actionCard in player.PlayerCards)
-  {
-    if (actionCard.CardType == CardType.SecondChance)
-    { Console.Write($" {actionCard.CardInfo()}"); }
-  }
-  Console.WriteLine("");
-}
 // Method to draw a card.
 void DrawACard(Player player)
 {
@@ -427,7 +405,7 @@ void DrawACard(Player player)
         Console.WriteLine("");
         Console.WriteLine($"\n{playerToFlip3.Name}'s have to flip {flipped} {(flipped == 3 ? "card" : "more card") + (flipped > 1 ? "s." : ".")}");
         Console.WriteLine($"\n{playerToFlip3.Name}'s cards:\n");
-        ShowCards(playerToFlip3);
+        playerToFlip3.ShowCards();
         if (playerToFlip3.Active && flipped > 0)
         {
           DrawACard(playerToFlip3); flipped--;
@@ -442,7 +420,7 @@ void DrawACard(Player player)
           Console.Write("\nPress any key to flip next card. ");
           Console.ReadKey(true);
         }
-        else
+        else if (playerToFlip3.Active)
         {
           Console.Write("\nPress any key to continue. ");
           Console.ReadKey(true);
