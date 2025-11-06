@@ -306,7 +306,11 @@ void DrawACard(Player player)
   Card? drawnCard = deck.CardDeck[RandomCard()];
   Console.WriteLine($"");
   Console.WriteLine($"\nDrawn card:");
-  Console.WriteLine($"\n {drawnCard.CardInfo()}");
+  Console.Write($" ");
+  Console.BackgroundColor = drawnCard.BackColor;
+  Console.ForegroundColor = drawnCard.FrontColor;
+  Console.WriteLine($"\n{drawnCard.CardInfo()}");
+  Console.ResetColor();
   deck.CardDeck.Remove(drawnCard);
   Thread.Sleep(1000);
   switch (drawnCard.CardType)
@@ -342,6 +346,8 @@ void DrawACard(Player player)
         {
           deck.DiscardPile.Add(drawnCard);
           Console.WriteLine("\nThat was close! Luckily you had a Second Chance to save you!");
+          Console.Write("\nPress any key to continue. ");
+          Console.ReadKey(true);
           return;
         }
       }
