@@ -92,25 +92,7 @@ while (isRunning)
           Console.WriteLine($"\nRound {roundCount}.\n");
           Console.WriteLine($"\n{player.Name}'s turn.\n");
           Console.WriteLine("\nYour cards:");
-          foreach (Card normalCard in player.PlayerCards)
-          {
-            if (normalCard.CardType == CardType.Normal)
-            { Console.Write($" {normalCard.CardInfo()}"); }
-          }
-          Console.WriteLine("");
-          foreach (Card modifierCard in player.PlayerCards)
-          {
-            if (modifierCard.CardType == CardType.Modifier || modifierCard.CardType == CardType.Double)
-            { Console.Write($" {modifierCard.CardInfo()}"); }
-          }
-          Console.WriteLine("");
-          foreach (Card actionCard in player.PlayerCards)
-          {
-            /* When Second Chance, Freeze and Flip Three have functionality, here would only be
-            "CardType.SecondChance", because FlipThree and Freeze can't be stored */
-            if (actionCard.CardType == CardType.SecondChance || actionCard.CardType == CardType.Freeze || actionCard.CardType == CardType.FlipThree)
-            { Console.Write($" {actionCard.CardInfo()}"); }
-          }
+          ShowCards(player);
           if (scoreBoard)
           {
             ShowScoreBoard();
@@ -122,105 +104,8 @@ while (isRunning)
           switch (Console.ReadKey().Key)
           {
             case ConsoleKey.D:
-              Card? drawnCard = deck.CardDeck[RandomCard()];
-              Console.WriteLine($"");
-              Console.WriteLine($"\nDrawn card:");
-              Console.WriteLine($"\n {drawnCard.CardInfo()}");
-              deck.CardDeck.Remove(drawnCard);
-
-              switch (drawnCard.CardType)
-              {
-                case CardType.Modifier: player.PlayerCards.Add(drawnCard); playing = false; break;
-                case CardType.Double: player.PlayerCards.Add(drawnCard); playing = false; break;
-                case CardType.SecondChance: player.PlayerCards.Add(drawnCard); playing = false; break;
-                case CardType.Normal:
-                  if (player.CheckBusted(drawnCard))
-                  {
-                    bool foundSecondChance = false;
-                    foreach (Card secondChanceCard in player.PlayerCards)
-                    {
-                      if (secondChanceCard.CardType == CardType.SecondChance)
-                      {
-                        foundSecondChance = true;
-                        player.PlayerCards.Remove(secondChanceCard);
-                        deck.DiscardPile.Add(secondChanceCard);
-                        break;
-                      }
-                    }
-                    if (!foundSecondChance)
-                    {
-                      Console.WriteLine("\nB U S T E D !");
-                      Console.Write("\nPress any key to continue. ");
-                      Console.ReadKey(true);
-                      player.PlayerCards.Add(drawnCard);
-                      player.EmptyPlayerCards(deck);
-                      player.Active = false;
-                      playing = false;
-                      break;
-                    }
-                    else
-                    {
-                      deck.DiscardPile.Add(drawnCard);
-                      playing = false;
-                      Console.WriteLine("\nThat was close! Luckily you had a Second Chance to save you!");
-                    }
-                  }
-                  if (playing)
-                  {
-                    player.PlayerCards.Add(drawnCard);
-                    if (player.CheckFlip7())
-                    {
-                      player.Score += player.CountScore();
-                      player.Score += 15;
-                      Console.WriteLine("\n F L I P  7 !");
-                      Console.WriteLine($"\nYour score this round is {player.CountScore() + 15}");
-                      Console.WriteLine($"Your total score is {player.Score}");
-                      Console.Write("\nPress any key to continue. ");
-                      Console.ReadKey(true);
-                      player.EmptyPlayerCards(deck);
-                      player.Active = false;
-                    }
-                    playing = false;
-                  }
-                  break;
-
-                case CardType.Freeze:
-                  deck.DiscardPile.Add(drawnCard);
-                  Console.WriteLine($"\nFreezing starts in");
-                  for (int i = 3; i > 0; --i)
-                  {
-                    switch (i)
-                    {
-                      case 3: Console.WriteLine($"     >>>{i}<<<"); break;
-                      case 2: Console.WriteLine($"      >>{i}<<"); break;
-                      case 1: Console.WriteLine($"       >{i}<"); break;
-                    }
-                    Thread.Sleep(1000);
-                  }
-
-                  TryClear();
-                  Console.WriteLine("\nF R E E Z E");
-                  ShowScoreBoard();
-
-                  Console.WriteLine("\nSelect player to freeze:\n");
-
-                  Player playerToFreeze = SelectedPlayer(player);
-
-                  playerToFreeze.Score += playerToFreeze.CountScore();
-                  Console.WriteLine("");
-                  Console.WriteLine($"\n{playerToFreeze.Name} is now frozen for this round!");
-                  Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
-                  Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
-                  playerToFreeze.EmptyPlayerCards(deck);
-                  playerToFreeze.Active = false;
-
-                  playing = false;
-                  break;
-
-                case CardType.FlipThree:
-                  deck.DiscardPile.Add(drawnCard);
-                  Console.WriteLine("\nW I P"); playing = false; break;
-              }
+              DrawACard(player);
+              playing = false;
               break;
 
             case ConsoleKey.S:
@@ -351,9 +236,9 @@ void ShowScoreBoard()
 {
   Console.WriteLine("\n------------------------------");
   Console.WriteLine("\nSCORE BOARD\n");
-  foreach (Player player1 in playersList)
+  foreach (Player player in playersList)
   {
-    Console.WriteLine($"{player1.Name}: {player1.Score}");
+    Console.WriteLine($"{player.Name}: {player.Score}");
   }
   Console.WriteLine("\n------------------------------");
 }
@@ -370,7 +255,7 @@ Player SelectedPlayer(Player player)
   foreach (Player freezePlayer in activePlayersList)
   {
     if (freezePlayer == player)
-    { Console.WriteLine($"[{activePlayersList.IndexOf(freezePlayer) + 1}] myself || my cards are worth: {freezePlayer.CountScore()} points."); }
+    { Console.WriteLine($"[{activePlayersList.IndexOf(freezePlayer) + 1}] (myself) || my cards are worth: {freezePlayer.CountScore()} points."); }
     else
     { Console.WriteLine($"[{activePlayersList.IndexOf(freezePlayer) + 1}] {freezePlayer.Name} || their cards are worth: {freezePlayer.CountScore()} points."); }
   }
@@ -389,4 +274,143 @@ Player SelectedPlayer(Player player)
   }
   Debug.Assert(selectedPlayer != null);
   return selectedPlayer;
+}
+// Method to show cards.
+void ShowCards(Player player)
+{
+  foreach (Card normalCard in player.PlayerCards)
+  {
+    if (normalCard.CardType == CardType.Normal)
+    { Console.Write($" {normalCard.CardInfo()}"); }
+  }
+  Console.WriteLine("");
+  foreach (Card modifierCard in player.PlayerCards)
+  {
+    if (modifierCard.CardType == CardType.Modifier || modifierCard.CardType == CardType.Double)
+    { Console.Write($" {modifierCard.CardInfo()}"); }
+  }
+  Console.WriteLine("");
+  foreach (Card actionCard in player.PlayerCards)
+  {
+    if (actionCard.CardType == CardType.SecondChance)
+    { Console.Write($" {actionCard.CardInfo()}"); }
+  }
+}
+// Method to draw a card.
+void DrawACard(Player player)
+{
+  Card? drawnCard = deck.CardDeck[RandomCard()];
+  Console.WriteLine($"");
+  Console.WriteLine($"\nDrawn card:");
+  Console.WriteLine($"\n {drawnCard.CardInfo()}");
+  deck.CardDeck.Remove(drawnCard);
+
+  switch (drawnCard.CardType)
+  {
+    case CardType.Modifier: player.PlayerCards.Add(drawnCard); return;
+    case CardType.Double: player.PlayerCards.Add(drawnCard); return;
+    case CardType.SecondChance: player.PlayerCards.Add(drawnCard); return;
+    case CardType.Normal:
+      if (player.CheckBusted(drawnCard))
+      {
+        bool foundSecondChance = false;
+        foreach (Card secondChanceCard in player.PlayerCards)
+        {
+          if (secondChanceCard.CardType == CardType.SecondChance)
+          {
+            foundSecondChance = true;
+            player.PlayerCards.Remove(secondChanceCard);
+            deck.DiscardPile.Add(secondChanceCard);
+            break;
+          }
+        }
+        if (!foundSecondChance)
+        {
+          Console.WriteLine("\nB U S T E D !");
+          Console.Write("\nPress any key to continue. ");
+          Console.ReadKey(true);
+          player.PlayerCards.Add(drawnCard);
+          player.EmptyPlayerCards(deck);
+          player.Active = false;
+          return;
+        }
+        else
+        {
+          deck.DiscardPile.Add(drawnCard);
+          Console.WriteLine("\nThat was close! Luckily you had a Second Chance to save you!");
+          return;
+        }
+      }
+      player.PlayerCards.Add(drawnCard);
+      if (player.CheckFlip7())
+      {
+        player.Score += player.CountScore();
+        player.Score += 15;
+        Console.WriteLine("\n F L I P  7 !");
+        Console.WriteLine($"\nYour score this round is {player.CountScore() + 15}");
+        Console.WriteLine($"Your total score is {player.Score}");
+        Console.Write("\nPress any key to continue. ");
+        Console.ReadKey(true);
+        player.EmptyPlayerCards(deck);
+        player.Active = false;
+      }
+      return;
+
+    case CardType.Freeze:
+      deck.DiscardPile.Add(drawnCard);
+      Console.WriteLine($"\nFreezing starts in");
+      for (int i = 3; i > 0; --i)
+      {
+        switch (i)
+        {
+          case 3: Console.WriteLine($"     >>>{i}<<<"); break;
+          case 2: Console.WriteLine($"      >>{i}<<"); break;
+          case 1: Console.WriteLine($"       >{i}<"); break;
+        }
+        Thread.Sleep(1000);
+      }
+
+      TryClear();
+      Console.WriteLine("\nF R E E Z E");
+      ShowScoreBoard();
+
+      Console.WriteLine("\nSelect player to freeze:\n");
+
+      Player playerToFreeze = SelectedPlayer(player);
+
+      playerToFreeze.Score += playerToFreeze.CountScore();
+      Console.WriteLine("");
+      Console.WriteLine($"\n{playerToFreeze.Name} is now frozen for this round!");
+      Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
+      Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
+      playerToFreeze.EmptyPlayerCards(deck);
+      playerToFreeze.Active = false;
+
+      return;
+
+    case CardType.FlipThree:
+      deck.DiscardPile.Add(drawnCard);
+      ShowScoreBoard();
+      Player playerToFlip3 = SelectedPlayer(player);
+      TryClear();
+      Console.WriteLine($"\n{playerToFlip3.Name}'s cards:\n");
+      ShowCards(playerToFlip3);
+      bool flipping = true;
+      int flipped = 0;
+      while (flipping)
+      {
+        if (playerToFlip3.Active && flipped < 3)
+        {
+          DrawACard(playerToFlip3); flipped++;
+          Console.WriteLine($"Flip nr {flipped + 1}");
+          Console.ReadKey(true);
+        }
+        else
+        {
+          flipping = false;
+          break;
+        }
+      }
+      return;
+  }
 }
