@@ -133,34 +133,72 @@ while (isRunning)
               Console.WriteLine($"\n {drawnCard.CardInfo()}");
               deck.CardDeck.Remove(drawnCard);
 
-              if (player.CheckBusted(drawnCard))
+              switch (drawnCard.CardType)
               {
-                Console.WriteLine("\nB U S T E D !");
-                Console.Write("\nPress ENTER to continue. ");
-                Console.ReadLine();
-                player.PlayerCards.Add(drawnCard);
-                player.EmptyPlayerCards(deck);
-                player.Active = false;
-                playing = false;
-                break;
+                case CardType.Modifier: player.PlayerCards.Add(drawnCard); playing = false; break;
+                case CardType.Double: player.PlayerCards.Add(drawnCard); playing = false; break;
+                case CardType.SecondChance: player.PlayerCards.Add(drawnCard); playing = false; break;
+                case CardType.Normal:
+                  if (player.CheckBusted(drawnCard))
+                  {
+                    bool foundSecondChance = false;
+                    foreach (Card secondChanceCard in player.PlayerCards)
+                    {
+                      if (secondChanceCard.CardType == CardType.SecondChance)
+                      {
+                        foundSecondChance = true;
+                        player.PlayerCards.Remove(secondChanceCard);
+                        deck.DiscardPile.Add(secondChanceCard);
+                        break;
+                      }
+                    }
+                    if (!foundSecondChance)
+                    {
+                      Console.WriteLine("\nB U S T E D !");
+                      Console.Write("\nPress ENTER to continue. ");
+                      Console.ReadLine();
+                      player.PlayerCards.Add(drawnCard);
+                      player.EmptyPlayerCards(deck);
+                      player.Active = false;
+                      playing = false;
+                      break;
+                    }
+                    else
+                    {
+                      deck.DiscardPile.Add(drawnCard);
+                      playing = false;
+                      Console.WriteLine("\nThat was close, luckily you had a Second Chance to save you!");
+                      Console.Write("\nPress ENTER to continue. ");
+                      Console.ReadLine();
+                    }
+                  }
+                  if (playing)
+                  {
+                    player.PlayerCards.Add(drawnCard);
+                    if (player.CheckFlip7())
+                    {
+                      player.Score += player.CountScore();
+                      player.Score += 15;
+                      Console.WriteLine("\n F L I P  7 !");
+                      Console.WriteLine($"\nYour score this round is {player.CountScore() + 15}");
+                      Console.WriteLine($"Your total score is {player.Score}");
+                      Console.Write("\nPress ENTER to continue. ");
+                      Console.ReadLine();
+                      player.EmptyPlayerCards(deck);
+                      player.Active = false;
+                    }
+                    playing = false;
+                  }
+                  break;
+
+                case CardType.Freeze:
+                  deck.DiscardPile.Add(drawnCard);
+                  Console.WriteLine("\nW I P"); playing = false; break;
+                case CardType.FlipThree:
+                  deck.DiscardPile.Add(drawnCard);
+                  Console.WriteLine("\nW I P"); playing = false; break;
               }
-              if (playing)
-              {
-                player.PlayerCards.Add(drawnCard);
-                if (player.CheckFlip7())
-                {
-                  player.Score += player.CountScore();
-                  player.Score += 15;
-                  Console.WriteLine("\n F L I P  7 !");
-                  Console.WriteLine($"\nYour score this round is {player.CountScore() + 15}");
-                  Console.WriteLine($"Your total score is {player.Score}");
-                  Console.Write("\nPress ENTER to continue. ");
-                  Console.ReadLine();
-                  player.EmptyPlayerCards(deck);
-                  player.Active = false;
-                }
-                playing = false;
-              }
+
               break;
             case ConsoleKey.S:
               player.Score += player.CountScore();
