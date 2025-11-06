@@ -168,7 +168,6 @@ while (isRunning)
                       deck.DiscardPile.Add(drawnCard);
                       playing = false;
                       Console.WriteLine("\nThat was close, luckily you had a Second Chance to save you!");
-                      Console.Write("\nPress ENTER to continue. ");
                       Console.ReadLine();
                     }
                   }
@@ -193,13 +192,70 @@ while (isRunning)
 
                 case CardType.Freeze:
                   deck.DiscardPile.Add(drawnCard);
-                  Console.WriteLine("\nW I P"); playing = false; break;
+                  Console.WriteLine($"\nFreezing starts in");
+                  for (int i = 3; i > 0; --i)
+                  {
+                    switch (i)
+                    {
+                      case 3: Console.WriteLine($"      >>>{i}<<<"); break;
+                      case 2: Console.WriteLine($"       >>{i}<<"); break;
+                      case 1: Console.WriteLine($"        >{i}<"); break;
+                    }
+                    Thread.Sleep(1000);
+                  }
+
+                  bool freezing = true;
+                  while (freezing)
+                  {
+                    TryClear();
+                    Console.WriteLine("\nF R E E Z E\n");
+                    Console.WriteLine("Current score board\n");
+                    foreach (Player allPlayers in playersList)
+                    {
+                      Console.WriteLine(allPlayers.PlayerInfo());
+                    }
+
+                    Console.WriteLine("\nSelect player to freeze:\n");
+                    List<Player> activePlayersList = new();
+                    foreach (Player activePlayer in playersList)
+                    {
+                      if (activePlayer.Active == true)
+                      { activePlayersList.Add(activePlayer); }
+                    }
+                    foreach (Player freezePlayer in activePlayersList)
+                    {
+                      if (freezePlayer == player)
+                      { Console.WriteLine($"[{activePlayersList.IndexOf(freezePlayer) + 1}] myself || my cards are worth: {freezePlayer.CountScore()} points."); }
+                      else
+                      { Console.WriteLine($"[{activePlayersList.IndexOf(freezePlayer) + 1}] {freezePlayer.Name} || their cards are worth: {freezePlayer.CountScore()} points."); }
+                    }
+                    Console.Write($"\nSelect index [1{(activePlayersList.Count > 1 ? "-" + activePlayersList.Count + "]" : "]")}: ");
+
+                    if (int.TryParse(Console.ReadLine(), out int selectedPlayer) && selectedPlayer > 0 && selectedPlayer <= activePlayersList.Count)
+                    {
+                      Player playerToFreeze = activePlayersList[selectedPlayer - 1];
+                      playerToFreeze.Score += player.CountScore();
+                      playerToFreeze.Active = false;
+                      Console.WriteLine("");
+                      Console.WriteLine($"\n{playerToFreeze.Name} is now frozen for this round!");
+                      Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
+                      Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
+                      Console.Write("\nPress ENTER to continue. ");
+                      Console.ReadLine();
+                      playerToFreeze.EmptyPlayerCards(deck);
+                      freezing = false;
+                    }
+                    else { continue; }
+                  }
+                  playing = false;
+                  break;
+
                 case CardType.FlipThree:
                   deck.DiscardPile.Add(drawnCard);
                   Console.WriteLine("\nW I P"); playing = false; break;
               }
-
               break;
+
             case ConsoleKey.S:
               player.Score += player.CountScore();
               playing = false;
