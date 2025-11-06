@@ -150,8 +150,8 @@ while (isRunning)
                     if (!foundSecondChance)
                     {
                       Console.WriteLine("\nB U S T E D !");
-                      Console.Write("\nPress ENTER to continue. ");
-                      Console.ReadLine();
+                      Console.Write("\nPress any key to continue. ");
+                      Console.ReadKey(true);
                       player.PlayerCards.Add(drawnCard);
                       player.EmptyPlayerCards(deck);
                       player.Active = false;
@@ -163,7 +163,6 @@ while (isRunning)
                       deck.DiscardPile.Add(drawnCard);
                       playing = false;
                       Console.WriteLine("\nThat was close! Luckily you had a Second Chance to save you!");
-                      Console.ReadLine();
                     }
                   }
                   if (playing)
@@ -176,8 +175,8 @@ while (isRunning)
                       Console.WriteLine("\n F L I P  7 !");
                       Console.WriteLine($"\nYour score this round is {player.CountScore() + 15}");
                       Console.WriteLine($"Your total score is {player.Score}");
-                      Console.Write("\nPress ENTER to continue. ");
-                      Console.ReadLine();
+                      Console.Write("\nPress any key to continue. ");
+                      Console.ReadKey(true);
                       player.EmptyPlayerCards(deck);
                       player.Active = false;
                     }
@@ -192,9 +191,9 @@ while (isRunning)
                   {
                     switch (i)
                     {
-                      case 3: Console.WriteLine($"      >>>{i}<<<"); break;
-                      case 2: Console.WriteLine($"       >>{i}<<"); break;
-                      case 1: Console.WriteLine($"        >{i}<"); break;
+                      case 3: Console.WriteLine($"     >>>{i}<<<"); break;
+                      case 2: Console.WriteLine($"      >>{i}<<"); break;
+                      case 1: Console.WriteLine($"       >{i}<"); break;
                     }
                     Thread.Sleep(1000);
                   }
@@ -212,8 +211,6 @@ while (isRunning)
                   Console.WriteLine($"\n{playerToFreeze.Name} is now frozen for this round!");
                   Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
                   Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
-                  Console.Write("\nPress ENTER to continue. ");
-                  Console.ReadLine();
                   playerToFreeze.EmptyPlayerCards(deck);
                   playerToFreeze.Active = false;
 
@@ -233,8 +230,8 @@ while (isRunning)
               Console.WriteLine("");
               Console.WriteLine($"\nYour score this round is {player.CountScore()}");
               Console.WriteLine($"Your total score is {player.Score}");
-              Console.Write("\nPress ENTER to continue. ");
-              Console.ReadLine();
+              Console.Write("\nPress any key to continue. ");
+              Console.ReadKey(true);
               player.EmptyPlayerCards(deck);
               break;
 
@@ -247,7 +244,6 @@ while (isRunning)
         if (player.Active)
         {
           Console.Write("\nPress [S] to stay or any other key to continue playing. ");
-
           switch (Console.ReadKey().Key)
           {
             case ConsoleKey.C: continue;
@@ -258,8 +254,8 @@ while (isRunning)
               Console.WriteLine("");
               Console.WriteLine($"\nYour score this round is {player.CountScore()}");
               Console.WriteLine($"Your total score is {player.Score}");
-              Console.Write("\nPress ENTER to continue. ");
-              Console.ReadLine();
+              Console.Write("\nPress any key to continue. ");
+              Console.ReadKey(true);
               player.EmptyPlayerCards(deck);
               continue;
           }
@@ -278,7 +274,6 @@ while (isRunning)
         round = false;
       }
     }
-
     bool winnerFound = false;
     foreach (Player player in playersList)
     {
@@ -288,7 +283,6 @@ while (isRunning)
         winnerFound = true;
       }
     }
-
     if (winnerFound)
     {
       for (int tries = 0; tries < playersList.Count; ++tries)
@@ -314,7 +308,6 @@ while (isRunning)
         Console.WriteLine("\nWe have a winner!");
         Console.WriteLine($"\nContratulations, {playersList[0].Name}!");
       }
-
       Console.WriteLine($"\nFinal score board: \n");
       for (int i = 0; i < playersList.Count; ++i)
       {
@@ -332,9 +325,7 @@ while (isRunning)
     ShowScoreBoard();
     Console.Write("\nPress ENTER to start next round. ");
     Console.ReadLine();
-
     continue;
-
   }
 }
 
@@ -367,6 +358,7 @@ void ShowScoreBoard()
   Console.WriteLine("\n------------------------------");
 }
 
+// Method to select a player to freeze/flip 3
 Player SelectedPlayer(Player player)
 {
   List<Player> activePlayersList = new();
