@@ -83,4 +83,26 @@ class Player
     }
     PlayerCards.Clear();
   }
+  // Method to show cards. Maybe move to player class later.
+  public void ShowCards()
+  {
+    foreach (Card normalCard in PlayerCards)
+    {
+      if (normalCard.CardType == CardType.Normal)
+      { Console.Write($" {normalCard.CardInfo()}"); }
+    }
+    Console.WriteLine("");
+    foreach (Card modifierCard in PlayerCards)
+    {
+      if (modifierCard.CardType == CardType.Modifier || modifierCard.CardType == CardType.Double)
+      { Console.Write($" {modifierCard.CardInfo()}"); }
+    }
+    Console.WriteLine("");
+    foreach (Card actionCard in PlayerCards)
+    {
+      if (actionCard.CardType == CardType.SecondChance)
+      { Console.Write($" {actionCard.CardInfo()}"); }
+    }
+    Console.WriteLine("");
+  }
 }
