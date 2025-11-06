@@ -112,13 +112,7 @@ while (isRunning)
           }
           if (scoreBoard)
           {
-            Console.WriteLine("\n------------------------------");
-            Console.WriteLine("\nSCORE BOARD\n");
-            foreach (Player player1 in playersList)
-            {
-              Console.WriteLine($"{player1.Name}: {player1.Score}");
-            }
-            Console.WriteLine("\n------------------------------");
+            ShowScoreBoard();
           }
 
           Console.WriteLine("");
@@ -208,12 +202,8 @@ while (isRunning)
                   while (freezing)
                   {
                     TryClear();
-                    Console.WriteLine("\nF R E E Z E\n");
-                    Console.WriteLine("Current score board\n");
-                    foreach (Player allPlayers in playersList)
-                    {
-                      Console.WriteLine(allPlayers.PlayerInfo());
-                    }
+                    Console.WriteLine("\nF R E E Z E");
+                    ShowScoreBoard();
 
                     Console.WriteLine("\nSelect player to freeze:\n");
                     List<Player> activePlayersList = new();
@@ -234,8 +224,7 @@ while (isRunning)
                     if (int.TryParse(Console.ReadLine(), out int selectedPlayer) && selectedPlayer > 0 && selectedPlayer <= activePlayersList.Count)
                     {
                       Player playerToFreeze = activePlayersList[selectedPlayer - 1];
-                      playerToFreeze.Score += player.CountScore();
-                      playerToFreeze.Active = false;
+                      playerToFreeze.Score += playerToFreeze.CountScore();
                       Console.WriteLine("");
                       Console.WriteLine($"\n{playerToFreeze.Name} is now frozen for this round!");
                       Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
@@ -243,6 +232,7 @@ while (isRunning)
                       Console.Write("\nPress ENTER to continue. ");
                       Console.ReadLine();
                       playerToFreeze.EmptyPlayerCards(deck);
+                      playerToFreeze.Active = false;
                       freezing = false;
                     }
                     else { continue; }
@@ -358,11 +348,8 @@ while (isRunning)
       break;
     }
     TryClear();
-    Console.WriteLine($"\nScores after round {roundCount}.\n");
-    foreach (Player player in playersList)
-    {
-      Console.WriteLine(player.PlayerInfo());
-    }
+    Console.WriteLine($"\nScores after round {roundCount}.");
+    ShowScoreBoard();
     Console.Write("\nPress ENTER to start next round. ");
     Console.ReadLine();
 
@@ -376,6 +363,7 @@ void TryClear()
 {
   try { Console.Clear(); } catch { }
 }
+// Method to create player.
 Player CreatePlayer(string name)
 {
   return new(name, 0);
@@ -386,4 +374,15 @@ int RandomCard()
   Random rnd = new();
 
   return rnd.Next(deck.CardDeck.Count);
+}
+// Method to show score board.
+void ShowScoreBoard()
+{
+  Console.WriteLine("\n------------------------------");
+  Console.WriteLine("\nSCORE BOARD\n");
+  foreach (Player player1 in playersList)
+  {
+    Console.WriteLine($"{player1.Name}: {player1.Score}");
+  }
+  Console.WriteLine("\n------------------------------");
 }
