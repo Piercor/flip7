@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using App;
 
 Deck deck = new();
@@ -161,7 +162,7 @@ while (isRunning)
                     {
                       deck.DiscardPile.Add(drawnCard);
                       playing = false;
-                      Console.WriteLine("\nThat was close, luckily you had a Second Chance to save you!");
+                      Console.WriteLine("\nThat was close! Luckily you had a Second Chance to save you!");
                       Console.ReadLine();
                     }
                   }
@@ -198,45 +199,24 @@ while (isRunning)
                     Thread.Sleep(1000);
                   }
 
-                  bool freezing = true;
-                  while (freezing)
-                  {
-                    TryClear();
-                    Console.WriteLine("\nF R E E Z E");
-                    ShowScoreBoard();
+                  TryClear();
+                  Console.WriteLine("\nF R E E Z E");
+                  ShowScoreBoard();
 
-                    Console.WriteLine("\nSelect player to freeze:\n");
-                    List<Player> activePlayersList = new();
-                    foreach (Player activePlayer in playersList)
-                    {
-                      if (activePlayer.Active == true)
-                      { activePlayersList.Add(activePlayer); }
-                    }
-                    foreach (Player freezePlayer in activePlayersList)
-                    {
-                      if (freezePlayer == player)
-                      { Console.WriteLine($"[{activePlayersList.IndexOf(freezePlayer) + 1}] myself || my cards are worth: {freezePlayer.CountScore()} points."); }
-                      else
-                      { Console.WriteLine($"[{activePlayersList.IndexOf(freezePlayer) + 1}] {freezePlayer.Name} || their cards are worth: {freezePlayer.CountScore()} points."); }
-                    }
-                    Console.Write($"\nSelect index [1{(activePlayersList.Count > 1 ? "-" + activePlayersList.Count + "]" : "]")}: ");
+                  Console.WriteLine("\nSelect player to freeze:\n");
 
-                    if (int.TryParse(Console.ReadLine(), out int selectedPlayer) && selectedPlayer > 0 && selectedPlayer <= activePlayersList.Count)
-                    {
-                      Player playerToFreeze = activePlayersList[selectedPlayer - 1];
-                      playerToFreeze.Score += playerToFreeze.CountScore();
-                      Console.WriteLine("");
-                      Console.WriteLine($"\n{playerToFreeze.Name} is now frozen for this round!");
-                      Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
-                      Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
-                      Console.Write("\nPress ENTER to continue. ");
-                      Console.ReadLine();
-                      playerToFreeze.EmptyPlayerCards(deck);
-                      playerToFreeze.Active = false;
-                      freezing = false;
-                    }
-                    else { continue; }
-                  }
+                  Player playerToFreeze = SelectedPlayer(player);
+
+                  playerToFreeze.Score += playerToFreeze.CountScore();
+                  Console.WriteLine("");
+                  Console.WriteLine($"\n{playerToFreeze.Name} is now frozen for this round!");
+                  Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
+                  Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
+                  Console.Write("\nPress ENTER to continue. ");
+                  Console.ReadLine();
+                  playerToFreeze.EmptyPlayerCards(deck);
+                  playerToFreeze.Active = false;
+
                   playing = false;
                   break;
 
@@ -385,4 +365,36 @@ void ShowScoreBoard()
     Console.WriteLine($"{player1.Name}: {player1.Score}");
   }
   Console.WriteLine("\n------------------------------");
+}
+
+Player SelectedPlayer(Player player)
+{
+  List<Player> activePlayersList = new();
+  foreach (Player activePlayer in playersList)
+  {
+    if (activePlayer.Active == true)
+    { activePlayersList.Add(activePlayer); }
+  }
+  foreach (Player freezePlayer in activePlayersList)
+  {
+    if (freezePlayer == player)
+    { Console.WriteLine($"[{activePlayersList.IndexOf(freezePlayer) + 1}] myself || my cards are worth: {freezePlayer.CountScore()} points."); }
+    else
+    { Console.WriteLine($"[{activePlayersList.IndexOf(freezePlayer) + 1}] {freezePlayer.Name} || their cards are worth: {freezePlayer.CountScore()} points."); }
+  }
+  Player? selectedPlayer = null;
+  bool selectingPlayer = true;
+
+  while (selectingPlayer)
+  {
+    Console.Write($"\nSelect index [1{(activePlayersList.Count > 1 ? "-" + activePlayersList.Count + "]" : "]")}: ");
+    if (int.TryParse(Console.ReadLine(), out int selectedPlayerIndex) && selectedPlayerIndex > 0 && selectedPlayerIndex <= activePlayersList.Count)
+    {
+      selectedPlayer = activePlayersList[selectedPlayerIndex - 1];
+      break;
+    }
+    else { continue; }
+  }
+  Debug.Assert(selectedPlayer != null);
+  return selectedPlayer;
 }
