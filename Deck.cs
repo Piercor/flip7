@@ -77,4 +77,15 @@ class Deck
       CardDeck.Add(new("Second Chance", 0, CardType.SecondChance, ConsoleColor.White, ConsoleColor.Red));
     }
   }
+  public void DeckReshuffle()
+  {
+    if (CardDeck.Count == 1)
+    {
+      foreach (Card card in DiscardPile)
+      {
+        CardDeck.Add(card);
+      }
+      DiscardPile.Clear();
+    }
+  }
 }
