@@ -70,6 +70,7 @@ while (isRunning)
   }
 
   bool scoreBoard = true;
+  bool othersCards = false;
   int roundCount = 0;
 
   while (inGame)
@@ -100,9 +101,21 @@ while (isRunning)
           {
             ShowScoreBoard(true);
           }
+          if (othersCards)
+          {
+            Console.WriteLine("\nOther players cards\n");
+            foreach (Player showPlayer in playersList)
+            {
+              if (showPlayer != player && showPlayer.Active)
+              {
+                Console.WriteLine($"{showPlayer.Name} || their cards are worth: {showPlayer.CountScore()} points.");
+                showPlayer.ShowCards();
+              }
+            }
+          }
 
           Console.WriteLine("");
-          Console.Write("\n[D]raw | [S]tay | [T]oggle score board. ");
+          Console.Write("\n[D]raw | [S]tay | [O]ther players cards | [T]oggle score board. ");
 
           switch (Console.ReadKey().Key)
           {
@@ -127,6 +140,10 @@ while (isRunning)
               if (!scoreBoard) { scoreBoard = true; }
               else { scoreBoard = false; }
               break;
+            case ConsoleKey.O:
+              if (!othersCards) { othersCards = true; }
+              else { othersCards = false; }
+              break;
           }
         }
         if (player.Active)
@@ -140,6 +157,18 @@ while (isRunning)
           if (scoreBoard)
           {
             ShowScoreBoard(true);
+          }
+          if (othersCards)
+          {
+            Console.WriteLine("\nOther players cards\n");
+            foreach (Player showPlayer in playersList)
+            {
+              if (showPlayer != player && showPlayer.Active)
+              {
+                Console.WriteLine($"{showPlayer.Name} || their cards are worth: {showPlayer.CountScore()} points.");
+                showPlayer.ShowCards();
+              }
+            }
           }
           if (activePlayersCount > 1)
           {
