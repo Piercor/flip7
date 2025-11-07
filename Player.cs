@@ -86,10 +86,24 @@ class Player
   // Method to show cards.
   public void ShowCards()
   {
+    for (int tries = 0; tries < PlayerCards.Count; ++tries)
+    {
+      for (int i = 1; i < PlayerCards.Count; ++i)
+      {
+        Card? current = PlayerCards[i];
+        Card? prev = PlayerCards[i - 1];
+        if (current.Value > prev.Value)
+        {
+          PlayerCards[i] = prev;
+          PlayerCards[i - 1] = current;
+        }
+      }
+    }
     foreach (Card normalCard in PlayerCards)
     {
       if (normalCard.CardType == CardType.Normal)
       {
+
         Console.Write($" ");
         Console.BackgroundColor = normalCard.BackColor;
         Console.ForegroundColor = normalCard.FrontColor;
