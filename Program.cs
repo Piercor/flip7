@@ -125,15 +125,24 @@ while (isRunning)
               break;
 
             case ConsoleKey.S:
-              player.Score += player.CountScore();
-              playing = false;
-              player.Active = false;
               Console.WriteLine("");
-              Console.WriteLine($"\nYour score this round is {player.CountScore()}");
-              Console.WriteLine($"Your total score is {player.Score}");
-              Console.Write("\nPress any key to continue. ");
-              Console.ReadKey(true);
-              player.EmptyPlayerCards(deck);
+              Console.Write("\nAre you sure you want to stay? Y/N: ");
+              switch (Console.ReadKey().Key)
+              {
+                case ConsoleKey.Y:
+                  player.Score += player.CountScore();
+                  playing = false;
+                  player.Active = false;
+                  Console.WriteLine("");
+                  Console.WriteLine($"\nYour score this round is {player.CountScore()}");
+                  Console.WriteLine($"Your total score is {player.Score}");
+                  Console.Write("\nPress any key to continue. ");
+                  Console.ReadKey(true);
+                  player.EmptyPlayerCards(deck);
+                  break;
+                case ConsoleKey.N:
+                  continue;
+              }
               break;
 
             case ConsoleKey.T:
@@ -172,20 +181,31 @@ while (isRunning)
           }
           if (activePlayersCount > 1)
           {
-            Console.Write("\nPress [S] to stay or any other key to continue playing. ");
+            Console.Write("\nPress [S] to stay or [C] to continue playing. ");
             switch (Console.ReadKey().Key)
             {
               case ConsoleKey.C: continue;
               case ConsoleKey.S:
-                player.Score += player.CountScore();
-                playing = false;
-                player.Active = false;
                 Console.WriteLine("");
-                Console.WriteLine($"\nYour score this round is {player.CountScore()}");
-                Console.WriteLine($"Your total score is {player.Score}");
-                Console.Write("\nPress any key to continue. ");
-                Console.ReadKey(true);
-                player.EmptyPlayerCards(deck);
+                Console.Write("\nAre you sure you want to stay? Y/N: ");
+                switch (Console.ReadKey().Key)
+                {
+                  case ConsoleKey.Y:
+                    player.Score += player.CountScore();
+                    playing = false;
+                    player.Active = false;
+                    Console.WriteLine("");
+                    Console.WriteLine($"\nYour score this round is {player.CountScore()}");
+                    Console.WriteLine($"Your total score is {player.Score}");
+                    Console.Write("\nPress any key to continue. ");
+                    Console.ReadKey(true);
+                    player.EmptyPlayerCards(deck);
+                    break;
+                  default:
+                    Console.Write("\nYou still playing. Press ENTER to continue. ");
+                    Console.ReadKey(true);
+                    break;
+                }
                 continue;
             }
           }
