@@ -6,7 +6,7 @@ class Player
   public int Score;
   public List<Card> PlayerCards = new();
   public bool Active;
-
+  public ConsoleColor Color;
   public Player(string name, int score)
   {
     Name = name;
