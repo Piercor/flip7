@@ -118,9 +118,7 @@ while (isRunning)
           Console.WriteLine($"\n   {player.Name}'s turn.   \n");
           Console.ResetColor();
           Console.WriteLine($"Cards in deck: {deck.CardDeck.Count} || cards in discard pile: {deck.DiscardPile.Count}");
-          // if (player.Active && activePlayersCount > 1)
-          // { Thread.Sleep(500); }
-          Console.WriteLine("\nYour cards:\n");
+          Console.WriteLine($"\nYour cards: {(player.CountScore() > 0 ? $"(worth {player.CountScore()} pts.)" : "")}\n");
           player.ShowCards();
           if (scoreBoard)
           {
@@ -142,7 +140,7 @@ while (isRunning)
           Console.WriteLine("");
           Console.Write("\n[D]raw | [S]tay | [O]ther players cards | [T]oggle score board. ");
 
-          switch (Console.ReadKey().Key)
+          switch (Console.ReadKey(intercept: true).Key)
           {
             case ConsoleKey.D:
               DrawACard(player);
@@ -152,7 +150,7 @@ while (isRunning)
             case ConsoleKey.S:
               Console.WriteLine("");
               Console.Write("\nPress [S] to confirm: ");
-              switch (Console.ReadKey().Key)
+              switch (Console.ReadKey(intercept: true).Key)
               {
                 case ConsoleKey.S:
                   player.Score += player.CountScore();
@@ -162,7 +160,7 @@ while (isRunning)
                   Console.WriteLine($"\nYour score this round is {player.CountScore()}");
                   Console.WriteLine($"Your total score is {player.Score}");
                   Console.Write("\nPress any key to continue. ");
-                  Console.ReadKey(true);
+                  Console.ReadKey(intercept: true);
                   player.EmptyPlayerCards(deck);
                   break;
                 default:
@@ -189,7 +187,7 @@ while (isRunning)
           Console.WriteLine($"\n   {player.Name}'s turn.   \n");
           Console.ResetColor();
           Console.WriteLine($"Cards in deck: {deck.CardDeck.Count} || cards in discard pile: {deck.DiscardPile.Count}");
-          Console.WriteLine("\nYour cards:\n");
+          Console.WriteLine($"\nYour cards: {(player.CountScore() > 0 ? $"(worth {player.CountScore()} pts.)" : "")}\n");
           player.ShowCards();
           if (scoreBoard)
           {
@@ -211,13 +209,13 @@ while (isRunning)
           {
             Console.WriteLine("");
             Console.Write("\nPress [S] to stay or [C] to continue playing. ");
-            switch (Console.ReadKey().Key)
+            switch (Console.ReadKey(intercept: true).Key)
             {
               case ConsoleKey.C: continue;
               case ConsoleKey.S:
                 Console.WriteLine("");
                 Console.Write("\nPress [S] to confirm: ");
-                switch (Console.ReadKey().Key)
+                switch (Console.ReadKey(intercept: true).Key)
                 {
                   case ConsoleKey.S:
                     player.Score += player.CountScore();
@@ -227,13 +225,13 @@ while (isRunning)
                     Console.WriteLine($"\nYour score this round is {player.CountScore()}");
                     Console.WriteLine($"Your total score is {player.Score}");
                     Console.Write("\nPress any key to continue. ");
-                    Console.ReadKey(true);
+                    Console.ReadKey(intercept: true);
                     player.EmptyPlayerCards(deck);
                     break;
                   default:
                     Console.WriteLine("");
                     Console.Write("\nYou still playing. Press ENTER to continue. ");
-                    Console.ReadKey(true);
+                    Console.ReadKey(intercept: true);
                     break;
                 }
                 continue;
@@ -299,14 +297,14 @@ while (isRunning)
       Console.Write("\nPress ENTER to finish. ");
       Console.ReadLine();
       inGame = false;
-      isRunning = false;
+      // isRunning = false;
       break;
     }
     TryClear();
     Console.WriteLine($"\nScores after round {roundCount}.");
     ShowScoreBoard(false);
     Console.Write("\nPress any key to start next round. ");
-    Console.ReadKey(true);
+    Console.ReadKey(intercept: true);
     continue;
   }
 }
@@ -426,7 +424,7 @@ void DrawACard(Player player)
         {
           Console.WriteLine("\nB U S T E D !");
           Console.Write("\nPress any key to continue. ");
-          Console.ReadKey(true);
+          Console.ReadKey(intercept: true);
           player.PlayerCards.Add(drawnCard);
           player.EmptyPlayerCards(deck);
           player.Active = false;
@@ -437,7 +435,7 @@ void DrawACard(Player player)
           deck.DiscardPile.Add(drawnCard);
           Console.WriteLine("\nThat was close! Luckily you had a Second Chance to save you!");
           Console.Write("\nPress any key to continue. ");
-          Console.ReadKey(true);
+          Console.ReadKey(intercept: true);
           return;
         }
       }
@@ -450,7 +448,7 @@ void DrawACard(Player player)
         Console.WriteLine($"\nYour score this round is {player.CountScore() + 15}");
         Console.WriteLine($"Your total score is {player.Score}");
         Console.Write("\nPress any key to continue. ");
-        Console.ReadKey(true);
+        Console.ReadKey(intercept: true);
         player.EmptyPlayerCards(deck);
         player.Active = false;
       }
@@ -479,7 +477,7 @@ void DrawACard(Player player)
       playerToFreeze.EmptyPlayerCards(deck);
       playerToFreeze.Active = false;
       Console.Write("\nPress any key to continue. ");
-      Console.ReadKey(true);
+      Console.ReadKey(intercept: true);
       return;
 
     case CardType.FlipThree:
@@ -513,12 +511,12 @@ void DrawACard(Player player)
         if (playerToFlip3.Active && flipped > 0)
         {
           Console.Write("\nPress any key to flip next card. ");
-          Console.ReadKey(true);
+          Console.ReadKey(intercept: true);
         }
         else if (playerToFlip3.Active)
         {
           Console.Write("\nPress any key to continue. ");
-          Console.ReadKey(true);
+          Console.ReadKey(intercept: true);
         }
       }
       return;
