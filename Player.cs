@@ -83,4 +83,44 @@ class Player
     }
     PlayerCards.Clear();
   }
+  // Method to show cards.
+  public void ShowCards()
+  {
+    foreach (Card normalCard in PlayerCards)
+    {
+      if (normalCard.CardType == CardType.Normal)
+      {
+        Console.Write($" ");
+        Console.BackgroundColor = normalCard.BackColor;
+        Console.ForegroundColor = normalCard.FrontColor;
+        Console.Write($"{normalCard.CardInfo()}");
+        Console.ResetColor();
+      }
+    }
+    Console.WriteLine("");
+    foreach (Card modifierCard in PlayerCards)
+    {
+      if (modifierCard.CardType == CardType.Modifier || modifierCard.CardType == CardType.Double)
+      {
+        Console.Write($" ");
+        Console.BackgroundColor = modifierCard.BackColor;
+        Console.ForegroundColor = modifierCard.FrontColor;
+        Console.Write($"{modifierCard.CardInfo()}");
+        Console.ResetColor();
+      }
+    }
+    Console.WriteLine("");
+    foreach (Card actionCard in PlayerCards)
+    {
+      if (actionCard.CardType == CardType.SecondChance)
+      {
+        Console.Write($" ");
+        Console.BackgroundColor = actionCard.BackColor;
+        Console.ForegroundColor = actionCard.FrontColor;
+        Console.Write($"{actionCard.CardInfo()}");
+        Console.ResetColor();
+      }
+    }
+    Console.WriteLine("");
+  }
 }
