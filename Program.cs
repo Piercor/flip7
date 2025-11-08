@@ -149,18 +149,42 @@ while (isRunning)
               }
             }
           }
-
-          Console.WriteLine("");
-          Console.Write("\n[D]raw | [S]tay | [O]ther players cards | [T]oggle score board. ");
-
-          switch (Console.ReadKey(intercept: true).Key)
+          bool inMenu = true;
+          int selectedIndex = 0;
+          int selectedOption = 0;
+          string[] mainOptions = ["Draw", "Stay", "Other players cards", "Toggle score board"];
+          while (inMenu)
           {
-            case ConsoleKey.D:
+            int cursorPosition = Console.CursorTop;
+            Console.SetCursorPosition(0, cursorPosition);
+            NavMenu(selectedIndex, mainOptions);
+            switch (Console.ReadKey(intercept: true).Key)
+            {
+              case ConsoleKey.LeftArrow:
+                selectedIndex--;
+                if (selectedIndex < 0)
+                { selectedIndex = mainOptions.Length - 1; }
+                break;
+              case ConsoleKey.RightArrow:
+                selectedIndex++;
+                if (selectedIndex >= mainOptions.Length)
+                { selectedIndex = 0; }
+                break;
+              case ConsoleKey.Enter:
+                selectedOption = selectedIndex;
+                inMenu = false;
+                break;
+            }
+            Console.SetCursorPosition(0, cursorPosition);
+          }
+          switch (selectedOption + 1)
+          {
+            case 1:
               DrawACard(player);
               playing = false;
               break;
 
-            case ConsoleKey.S:
+            case 2:
               Console.WriteLine("");
               Console.Write("\nPress [S] to confirm: ");
               switch (Console.ReadKey(intercept: true).Key)
@@ -181,15 +205,17 @@ while (isRunning)
               }
               break;
 
-            case ConsoleKey.T:
-              if (!scoreBoard) { scoreBoard = true; }
-              else { scoreBoard = false; }
-              break;
-            case ConsoleKey.O:
+            case 3:
               if (!othersCards) { othersCards = true; }
               else { othersCards = false; }
               break;
+
+            case 4:
+              if (!scoreBoard) { scoreBoard = true; }
+              else { scoreBoard = false; }
+              break;
           }
+
         }
         if (player.Active)
         {
@@ -532,5 +558,25 @@ void DrawACard(Player player)
         }
       }
       return;
+  }
+}
+void NavMenu(int selectedIndex, string[] menuOptions)
+{
+  for (int i = 0; i < menuOptions.Length; ++i)
+  {
+    if (i == selectedIndex)
+    {
+      Console.BackgroundColor = ConsoleColor.DarkMagenta;
+      Console.Write($"  {menuOptions[i]} ");
+      Console.ResetColor();
+    }
+    else if (i == menuOptions.Length - 1)
+    {
+      Console.WriteLine($" {menuOptions[i]}  \n");
+    }
+    else
+    {
+      Console.Write($" {menuOptions[i]}  ");
+    }
   }
 }
