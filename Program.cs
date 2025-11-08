@@ -32,71 +32,76 @@ while (isRunning)
   {
 
     case ConsoleKey.N:
-      TryClear();
-      Console.WriteLine("\nHow many players (min. 3, max. 10)?");
-      Console.Write("▶ ");
-
-      if (int.TryParse(Console.ReadLine(), out int playersNumb) && playersNumb > 2 && playersNumb <= 10)
+      bool preGame = true;
+      while (preGame)
       {
         TryClear();
-        Console.WriteLine("\nInsert players names\n");
-        for (int i = 0; i < playersNumb; ++i)
+        Console.WriteLine("\nHow many players (min. 3, max. 10)?");
+        Console.Write("▶ ");
+
+        if (int.TryParse(Console.ReadLine(), out int playersNumb) && playersNumb > 2 && playersNumb <= 10)
         {
-          bool creating = true;
-          while (creating)
+          TryClear();
+          Console.WriteLine("\nInsert players names\n");
+          for (int i = 0; i < playersNumb; ++i)
           {
-            Console.BackgroundColor = colors[i];
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write($"\nPlayer {i + 1} name?");
-            Console.ResetColor();
-            Console.Write(" ");
-            string? newPlayerName = Console.ReadLine();
-            if (!string.IsNullOrWhiteSpace(newPlayerName))
+            bool creating = true;
+            while (creating)
             {
-              playersList.Add(CreatePlayer(newPlayerName));
-              playersList[i].Color = colors[i];
-              creating = false;
+              Console.BackgroundColor = colors[i];
+              Console.ForegroundColor = ConsoleColor.Black;
+              Console.Write($"\nPlayer {i + 1} name?");
+              Console.ResetColor();
+              Console.Write(" ");
+              string? newPlayerName = Console.ReadLine();
+              if (!string.IsNullOrWhiteSpace(newPlayerName))
+              {
+                playersList.Add(CreatePlayer(newPlayerName));
+                playersList[i].Color = colors[i];
+                creating = false;
+              }
+              else { Console.Write("\nPlayer name can't be empty. "); Console.ReadLine(); }
             }
-            else { Console.Write("\nPlayer name can't be empty. "); Console.ReadLine(); }
           }
         }
-      }
-      else if (playersNumb < 3)
-      {
-        Console.Write("\nYou need at least 3 players to play. "); Console.ReadLine();
-      }
-      else if (playersNumb > 10)
-      {
-        Console.Write("\nNo more than 10 players can play. "); Console.ReadLine();
-      }
-      else
-      {
-        Console.Write("\nInvalid input. "); Console.ReadLine();
-      }
-
-      if (playersList.Count >= 3 && playersList.Count <= 10)
-      {
-        inGame = true;
-        TryClear();
-        Console.WriteLine("\nPoints to reach? (200 by default)?");
-        Console.Write("▶ ");
-        if (int.TryParse(Console.ReadLine(), out int userPoints) && playersNumb > 2 && playersNumb <= 10)
+        else if (playersNumb < 3)
         {
-          pointsToReach = userPoints;
+          Console.Write("\nYou need at least 3 players to play. "); Console.ReadLine();
+        }
+        else if (playersNumb > 10)
+        {
+          Console.Write("\nNo more than 10 players can play. "); Console.ReadLine();
+        }
+        else
+        {
+          Console.Write("\nInvalid input. "); Console.ReadLine();
         }
 
-        TryClear();
-        Console.WriteLine("\nLet's play!\n");
-        for (int i = 0; i < playersList.Count; ++i)
+        if (playersList.Count >= 3 && playersList.Count <= 10)
         {
-          Console.BackgroundColor = playersList[i].Color;
-          Console.ForegroundColor = ConsoleColor.Black;
-          Console.WriteLine($"{playersList[i].Name}");
-          Console.ResetColor();
+          inGame = true;
+          TryClear();
+          Console.WriteLine("\nPoints to reach? (200 by default)?");
+          Console.Write("▶ ");
+          if (int.TryParse(Console.ReadLine(), out int userPoints) && playersNumb > 2 && playersNumb <= 10)
+          {
+            pointsToReach = userPoints;
+          }
+
+          TryClear();
+          Console.WriteLine("\nLet's play!\n");
+          for (int i = 0; i < playersList.Count; ++i)
+          {
+            Console.BackgroundColor = playersList[i].Color;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine($"{playersList[i].Name}");
+            Console.ResetColor();
+          }
+          Console.WriteLine($"\nPoints to reach: {pointsToReach}.");
+          Console.Write("\nPress ENTER when ready to play. ");
+          Console.ReadLine();
+          preGame = false;
         }
-        Console.WriteLine($"\nPoints to reach: {pointsToReach}.");
-        Console.Write("\nPress ENTER when ready to play. ");
-        Console.ReadLine();
       }
       break;
     case ConsoleKey.Q:
@@ -569,10 +574,6 @@ void NavMenu(int selectedIndex, string[] menuOptions)
       Console.BackgroundColor = ConsoleColor.DarkMagenta;
       Console.Write($"  {menuOptions[i]} ");
       Console.ResetColor();
-    }
-    else if (i == menuOptions.Length - 1)
-    {
-      Console.WriteLine($" {menuOptions[i]}  \n");
     }
     else
     {
