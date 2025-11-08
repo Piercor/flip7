@@ -24,14 +24,12 @@ while (isRunning)
   TryClear();
 
   Console.WriteLine("\nFLIP 7\n");
-  Console.WriteLine("\n[N]ew game.");
-  Console.WriteLine("\n[Q]uit.");
-  Console.Write("\n▶ ");
   bool inGame = false;
-  switch (Console.ReadKey(intercept: true).Key)
+  string[] firstOptions = ["New game", "Quit"];
+  switch (NavMenuKeys(firstOptions, false))
   {
 
-    case ConsoleKey.N:
+    case 0:
       bool preGame = true;
       while (preGame)
       {
@@ -104,7 +102,7 @@ while (isRunning)
         }
       }
       break;
-    case ConsoleKey.Q:
+    case 1:
       isRunning = false;
       break;
   }
@@ -154,44 +152,20 @@ while (isRunning)
               }
             }
           }
-          bool inMenu = true;
-          int selectedIndex = 0;
-          int selectedOption = 0;
           string[] mainOptions = ["Draw", "Stay", "Other players cards", "Toggle score board"];
-          while (inMenu)
+          switch (NavMenuKeys(mainOptions, true))
           {
-            NavMenu(selectedIndex, mainOptions);
-            switch (Console.ReadKey(intercept: true).Key)
-            {
-              case ConsoleKey.LeftArrow:
-                selectedIndex--;
-                if (selectedIndex < 0)
-                { selectedIndex = mainOptions.Length - 1; }
-                break;
-              case ConsoleKey.RightArrow:
-                selectedIndex++;
-                if (selectedIndex >= mainOptions.Length)
-                { selectedIndex = 0; }
-                break;
-              case ConsoleKey.Enter:
-                selectedOption = selectedIndex;
-                inMenu = false;
-                break;
-            }
-          }
-          switch (selectedOption + 1)
-          {
-            case 1:
+            case 0:
               DrawACard(player);
               playing = false;
               break;
 
-            case 2:
+            case 1:
               Console.WriteLine("");
-              Console.Write("\nPress [S] to confirm: ");
-              switch (Console.ReadKey(intercept: true).Key)
+              string[] confirmStay = ["Stay", "Keep playing"];
+              switch (NavMenuKeys(confirmStay, true))
               {
-                case ConsoleKey.S:
+                case 0:
                   player.Score += player.CountScore();
                   playing = false;
                   player.Active = false;
@@ -202,17 +176,17 @@ while (isRunning)
                   Console.ReadKey(intercept: true);
                   player.EmptyPlayerCards(deck);
                   break;
-                default:
+                case 1:
                   continue;
               }
               break;
 
-            case 3:
+            case 2:
               if (!othersCards) { othersCards = true; }
               else { othersCards = false; }
               break;
 
-            case 4:
+            case 3:
               if (!scoreBoard) { scoreBoard = true; }
               else { scoreBoard = false; }
               break;
@@ -249,16 +223,16 @@ while (isRunning)
           if (activePlayersCount > 1)
           {
             Console.WriteLine("");
-            Console.Write("\nPress [S] to stay or [C] to continue playing. ");
-            switch (Console.ReadKey(intercept: true).Key)
+            string[] stayOrContinue = ["Stay", "Continue"];
+
+            switch (NavMenuKeys(stayOrContinue, true))
             {
-              case ConsoleKey.C: continue;
-              case ConsoleKey.S:
+              case 0:
                 Console.WriteLine("");
-                Console.Write("\nPress [S] to confirm: ");
-                switch (Console.ReadKey(intercept: true).Key)
+                string[] confirmStay = ["Confirm", "Keep playing"];
+                switch (NavMenuKeys(confirmStay, true))
                 {
-                  case ConsoleKey.S:
+                  case 0:
                     player.Score += player.CountScore();
                     playing = false;
                     player.Active = false;
@@ -269,13 +243,14 @@ while (isRunning)
                     Console.ReadKey(intercept: true);
                     player.EmptyPlayerCards(deck);
                     break;
-                  default:
+                  case 1:
                     Console.WriteLine("");
                     Console.Write("\nYou still playing. Press ENTER to continue. ");
                     Console.ReadKey(intercept: true);
                     break;
                 }
                 continue;
+              case 1: continue;
             }
           }
         }
@@ -391,7 +366,6 @@ Player SelectedPlayer(Player player)
   }
   foreach (Player chosePlayer in activePlayersList)
   {
-
     if (chosePlayer == player)
     {
       Console.BackgroundColor = chosePlayer.Color;
@@ -562,7 +536,7 @@ void DrawACard(Player player)
       return;
   }
 }
-void NavMenu(int selectedIndex, string[] menuOptions)
+void NavMenu(int selectedIndex, string[] menuOptions, bool horizontal)
 {
   int cursorPosition = Console.CursorTop;
   Console.SetCursorPosition(0, cursorPosition);
@@ -571,13 +545,53 @@ void NavMenu(int selectedIndex, string[] menuOptions)
     if (i == selectedIndex)
     {
       Console.BackgroundColor = ConsoleColor.DarkMagenta;
-      Console.Write($"  {menuOptions[i]} ");
+      if (horizontal)
+      { Console.Write($"  {menuOptions[i]} "); }
+      else { Console.WriteLine($"  {menuOptions[i]} "); }
       Console.ResetColor();
     }
     else
     {
-      Console.Write($" {menuOptions[i]}  ");
+      if (horizontal)
+      { Console.Write($" {menuOptions[i]}  "); }
+      else { Console.WriteLine($" {menuOptions[i]}  "); }
     }
   }
   Console.SetCursorPosition(0, cursorPosition);
+}
+int NavMenuKeys(string[] menuOptions, bool horizontal)
+{
+  ConsoleKey? upLeft = ConsoleKey.UpArrow;
+  ConsoleKey? downRight = ConsoleKey.DownArrow;
+  if (horizontal)
+  {
+    upLeft = ConsoleKey.LeftArrow;
+    downRight = ConsoleKey.RightArrow;
+  }
+
+  bool inMenu = true;
+  int selectedIndex = 0;
+  int selectedOption = 0;
+  while (inMenu)
+  {
+    NavMenu(selectedIndex, menuOptions, horizontal);
+    switch (Console.ReadKey(intercept: true).Key)
+    {
+      case var k when k == upLeft:
+        selectedIndex--;
+        if (selectedIndex < 0)
+        { selectedIndex = menuOptions.Length - 1; }
+        break;
+      case var k when k == downRight:
+        selectedIndex++;
+        if (selectedIndex >= menuOptions.Length)
+        { selectedIndex = 0; }
+        break;
+      case ConsoleKey.Enter:
+        selectedOption = selectedIndex;
+        inMenu = false;
+        break;
+    }
+  }
+  return selectedOption;
 }
