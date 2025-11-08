@@ -160,8 +160,6 @@ while (isRunning)
           string[] mainOptions = ["Draw", "Stay", "Other players cards", "Toggle score board"];
           while (inMenu)
           {
-            int cursorPosition = Console.CursorTop;
-            Console.SetCursorPosition(0, cursorPosition);
             NavMenu(selectedIndex, mainOptions);
             switch (Console.ReadKey(intercept: true).Key)
             {
@@ -180,7 +178,6 @@ while (isRunning)
                 inMenu = false;
                 break;
             }
-            Console.SetCursorPosition(0, cursorPosition);
           }
           switch (selectedOption + 1)
           {
@@ -567,6 +564,8 @@ void DrawACard(Player player)
 }
 void NavMenu(int selectedIndex, string[] menuOptions)
 {
+  int cursorPosition = Console.CursorTop;
+  Console.SetCursorPosition(0, cursorPosition);
   for (int i = 0; i < menuOptions.Length; ++i)
   {
     if (i == selectedIndex)
@@ -580,4 +579,5 @@ void NavMenu(int selectedIndex, string[] menuOptions)
       Console.Write($" {menuOptions[i]}  ");
     }
   }
+  Console.SetCursorPosition(0, cursorPosition);
 }
