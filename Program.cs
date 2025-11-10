@@ -135,7 +135,7 @@ while (isRunning)
           Console.ResetColor();
           Console.WriteLine($"Cards in deck: {deck.CardDeck.Count} || cards in discard pile: {deck.DiscardPile.Count}");
           Console.WriteLine($"\nYour cards: {(player.CountScore() > 0 ? $"(worth {player.CountScore()} pts.)" : "")}\n");
-          player.ShowCards();
+          player.ShowCards(true);
           if (scoreBoard)
           {
             ShowScoreBoard(true);
@@ -148,11 +148,11 @@ while (isRunning)
               if (showPlayer != player && showPlayer.Active)
               {
                 Console.WriteLine($"{showPlayer.Name} || their cards are worth: {showPlayer.CountScore()} points.");
-                showPlayer.ShowCards();
+                showPlayer.ShowCards(false);
               }
             }
           }
-          string[] mainOptions = ["Draw", "Stay", "Other players cards", "Toggle score board"];
+          string[] mainOptions = ["Draw", "Stay", "Other players cards", "Score board"];
           switch (NavMenuKeys(mainOptions, true))
           {
             case 0:
@@ -182,12 +182,12 @@ while (isRunning)
               break;
 
             case 2:
-              if (!othersCards) { othersCards = true; }
+              if (!othersCards) { othersCards = true; scoreBoard = false; }
               else { othersCards = false; }
               break;
 
             case 3:
-              if (!scoreBoard) { scoreBoard = true; }
+              if (!scoreBoard) { scoreBoard = true; othersCards = false; }
               else { scoreBoard = false; }
               break;
           }
@@ -203,7 +203,7 @@ while (isRunning)
           Console.ResetColor();
           Console.WriteLine($"Cards in deck: {deck.CardDeck.Count} || cards in discard pile: {deck.DiscardPile.Count}");
           Console.WriteLine($"\nYour cards: {(player.CountScore() > 0 ? $"(worth {player.CountScore()} pts.)" : "")}\n");
-          player.ShowCards();
+          player.ShowCards(true);
           if (scoreBoard)
           {
             ShowScoreBoard(true);
@@ -216,18 +216,19 @@ while (isRunning)
               if (showPlayer != player && showPlayer.Active)
               {
                 Console.WriteLine($"{showPlayer.Name} || their cards are worth: {showPlayer.CountScore()} points.");
-                showPlayer.ShowCards();
+                showPlayer.ShowCards(false);
               }
             }
           }
           if (activePlayersCount > 1)
           {
             Console.WriteLine("");
-            string[] stayOrContinue = ["Stay", "Continue"];
+            string[] stayOrContinue = ["Continue", "Stay"];
 
             switch (NavMenuKeys(stayOrContinue, true))
             {
-              case 0:
+              case 0: continue;
+              case 1:
                 Console.WriteLine("");
                 string[] confirmStay = ["Confirm", "Keep playing"];
                 switch (NavMenuKeys(confirmStay, true))
@@ -250,7 +251,7 @@ while (isRunning)
                     break;
                 }
                 continue;
-              case 1: continue;
+
             }
           }
         }
@@ -344,19 +345,23 @@ int RandomCard()
 // Method to show score board.
 void ShowScoreBoard(bool inRound)
 {
-  Console.WriteLine("\n------------------------------");
   Console.WriteLine("\nSCORE BOARD\n");
   foreach (Player player in playersList)
   {
     if (inRound)
-    { Console.WriteLine($"{player.Name}: {player.Score} | {(player.Active ? "playing" : "out")}"); }
-    else { Console.WriteLine($"{player.Name}: {player.Score}"); }
+    {
+      Console.Write($"{player.Name}: {player.Score} | {(player.Active ? "playing" : "out")}");
+    }
+    else { Console.Write($"{player.Name}: {player.Score}"); }
+    if ((playersList.IndexOf(player) + 1) % 2 != 0) { Console.Write(" |    | "); }
+    if ((playersList.IndexOf(player) + 1) % 2 == 0) { Console.WriteLine(""); }
+
   }
   Console.WriteLine("\n------------------------------");
 }
 
 // Method to select a player to freeze/flip 3
-Player SelectedPlayer(Player player)
+Player SelectedPlayer(Player player, bool freeze)
 {
   List<Player> activePlayersList = new();
   foreach (Player activePlayer in playersList)
@@ -364,41 +369,33 @@ Player SelectedPlayer(Player player)
     if (activePlayer.Active == true)
     { activePlayersList.Add(activePlayer); }
   }
+  string[] activePlayersArray = new string[activePlayersList.Count];
+  Console.WriteLine("");
   foreach (Player chosePlayer in activePlayersList)
   {
     if (chosePlayer == player)
     {
       Console.BackgroundColor = chosePlayer.Color;
       Console.ForegroundColor = ConsoleColor.Black;
-      Console.Write($"[{activePlayersList.IndexOf(chosePlayer) + 1}] (myself) ");
+      Console.Write($" (myself) ");
       Console.ResetColor();
-      Console.WriteLine($"|| my cards are worth: {chosePlayer.CountScore()} points.");
+      Console.WriteLine($"|| my cards are worth: {chosePlayer.CountScore()} points. My score right now is {chosePlayer.Score} pts.");
+      activePlayersArray[activePlayersList.IndexOf(chosePlayer)] = $"(myself)";
     }
     else
     {
       Console.BackgroundColor = chosePlayer.Color;
       Console.ForegroundColor = ConsoleColor.Black;
-      Console.Write($"[{activePlayersList.IndexOf(chosePlayer) + 1}] {chosePlayer.Name} ");
+      Console.Write($" {chosePlayer.Name} ");
       Console.ResetColor();
-      Console.WriteLine($"|| their cards are worth: {chosePlayer.CountScore()} points.");
+      Console.WriteLine($"|| their cards are worth: {chosePlayer.CountScore()} points. Their score right now is {chosePlayer.Score} pts.");
+      activePlayersArray[activePlayersList.IndexOf(chosePlayer)] = $"{chosePlayer.Name}";
     }
 
-    chosePlayer.ShowCards();
+    chosePlayer.ShowCards(false);
   }
-  Player? selectedPlayer = null;
-  bool selectingPlayer = true;
-
-  while (selectingPlayer)
-  {
-    Console.Write($"\nSelect index [1{(activePlayersList.Count > 1 ? "-" + activePlayersList.Count + "]" : "]")}: ");
-    if (int.TryParse(Console.ReadLine(), out int selectedPlayerIndex) && selectedPlayerIndex > 0 && selectedPlayerIndex <= activePlayersList.Count)
-    {
-      selectedPlayer = activePlayersList[selectedPlayerIndex - 1];
-      break;
-    }
-    else { continue; }
-  }
-  Debug.Assert(selectedPlayer != null);
+  Console.WriteLine($"\nSelect player to {(freeze ? "freeze" : "flip 3")} :\n");
+  Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
   return selectedPlayer;
 }
 // Method to draw a card.
@@ -473,14 +470,13 @@ void DrawACard(Player player)
       Thread.Sleep(1000);
       TryClear();
       Console.WriteLine("\nF R E E Z E");
-      ShowScoreBoard(true);
 
       Console.WriteLine("\nSelect player to freeze:\n");
 
-      Player playerToFreeze = SelectedPlayer(player);
-
+      Player playerToFreeze = SelectedPlayer(player, true);
+      TryClear();
       playerToFreeze.Score += playerToFreeze.CountScore();
-      Console.WriteLine("");
+      Console.WriteLine("\n");
       Console.BackgroundColor = playerToFreeze.Color;
       Console.ForegroundColor = ConsoleColor.Black;
       Console.Write($"\n{playerToFreeze.Name}");
@@ -498,8 +494,8 @@ void DrawACard(Player player)
       deck.DiscardPile.Add(drawnCard);
       Thread.Sleep(1000);
       TryClear();
-      ShowScoreBoard(true);
-      Player playerToFlip3 = SelectedPlayer(player);
+      Console.WriteLine("\nF L I P  3");
+      Player playerToFlip3 = SelectedPlayer(player, false);
       bool flipping = true;
       int flipped = 3;
       while (flipping)
@@ -512,7 +508,7 @@ void DrawACard(Player player)
         Console.ResetColor();
         Console.WriteLine($" have to flip {flipped} {(flipped == 3 ? "card" : "more card") + (flipped > 1 ? "s." : ".")}");
         Console.WriteLine($"\n{playerToFlip3.Name}'s cards:\n");
-        playerToFlip3.ShowCards();
+        playerToFlip3.ShowCards(false);
         if (playerToFlip3.Active && flipped > 0)
         {
           DrawACard(playerToFlip3); flipped--;
