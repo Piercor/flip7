@@ -134,7 +134,7 @@ class Player
         Console.ResetColor();
       }
     }
-    if (vertical) { Console.WriteLine(""); Console.WriteLine("\n------------------------------"); }
+    if (vertical) { Console.WriteLine(""); Console.WriteLine("\n------------------------------------------------"); }
     else
     {
       Console.WriteLine("");
