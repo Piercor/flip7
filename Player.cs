@@ -84,7 +84,7 @@ class Player
     PlayerCards.Clear();
   }
   // Method to show cards.
-  public void ShowCards()
+  public void ShowCards(bool vertical)
   {
     for (int tries = 0; tries < PlayerCards.Count; ++tries)
     {
@@ -103,7 +103,6 @@ class Player
     {
       if (normalCard.CardType == CardType.Normal)
       {
-
         Console.Write($" ");
         Console.BackgroundColor = normalCard.BackColor;
         Console.ForegroundColor = normalCard.FrontColor;
@@ -111,7 +110,7 @@ class Player
         Console.ResetColor();
       }
     }
-    Console.WriteLine("");
+    if (vertical) { Console.WriteLine(""); }
     foreach (Card modifierCard in PlayerCards)
     {
       if (modifierCard.CardType == CardType.Modifier || modifierCard.CardType == CardType.Double)
@@ -123,7 +122,7 @@ class Player
         Console.ResetColor();
       }
     }
-    Console.WriteLine("");
+    if (vertical) { Console.WriteLine(""); }
     foreach (Card actionCard in PlayerCards)
     {
       if (actionCard.CardType == CardType.SecondChance)
@@ -133,6 +132,33 @@ class Player
         Console.ForegroundColor = actionCard.FrontColor;
         Console.Write($"{actionCard.CardInfo()}");
         Console.ResetColor();
+      }
+    }
+    if (vertical) { Console.WriteLine(""); Console.WriteLine("\n------------------------------"); }
+    else
+    {
+      Console.WriteLine("");
+      Console.Write(" ");
+      for (int i = 0; i < PlayerCards.Count; ++i)
+      {
+        if (PlayerCards[i].CardType == CardType.Normal)
+        {
+          if (PlayerCards[i].Value <= 9)
+          { Console.Write("-----"); }
+          else { Console.Write("------"); }
+        }
+        else if (PlayerCards[i].CardType == CardType.SecondChance)
+        {
+          Console.Write("-----------------");
+        }
+        else if (PlayerCards[i].CardType == CardType.Modifier || PlayerCards[i].CardType == CardType.Modifier)
+        {
+          if (PlayerCards[i].Value == 10)
+          { Console.Write("-------"); }
+          else { Console.Write("------"); }
+        }
+        if (i != PlayerCards.Count - 1)
+        { Console.Write("-"); }
       }
     }
     Console.WriteLine("");
