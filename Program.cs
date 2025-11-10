@@ -251,7 +251,6 @@ while (isRunning)
             }
             if (activePlayersCount > 1)
             {
-              Console.WriteLine("");
               string[] stayOrContinue = ["Continue", "Stay"];
 
               switch (NavMenuKeys(stayOrContinue, true))
@@ -469,7 +468,7 @@ void DrawACard(Player player)
   Console.ResetColor();
   deck.CardDeck.Remove(drawnCard);
   deck.DeckReshuffle();
-  Thread.Sleep(1000);
+  Thread.Sleep(500);
   switch (drawnCard.CardType)
   {
     case CardType.Modifier: player.PlayerCards.Add(drawnCard); return;
