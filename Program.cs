@@ -142,16 +142,20 @@ while (isRunning)
           }
           if (othersCards)
           {
-            Console.WriteLine("\nOther players cards\n");
-            foreach (Player showPlayer in playersList)
+            if (activePlayersCount > 1)
             {
-              if (showPlayer != player && showPlayer.Active)
+              Console.WriteLine("\nOther players cards\n");
+              foreach (Player showPlayer in playersList)
               {
-                Console.WriteLine($"{showPlayer.Name} || their cards are worth: {showPlayer.CountScore()} points.");
-                showPlayer.ShowCards(false);
+                if (showPlayer != player && showPlayer.Active)
+                {
+                  Console.WriteLine($"{showPlayer.Name} {(showPlayer.PlayerCards.Count > 0 ? $"|| their cards are worth: {showPlayer.CountScore()} points." : "has no cards yet.")}");
+                  if (showPlayer.PlayerCards.Count > 0) { showPlayer.ShowCards(false); }
+                }
               }
+              Console.WriteLine("------------------------------------------------\n");
             }
-            Console.WriteLine("------------------------------------------------\n");
+            else { othersCards = false; }
           }
           string[] mainOptions = ["Draw", "Stay", "Other players cards", "Score board"];
           switch (NavMenuKeys(mainOptions, true))
@@ -210,15 +214,20 @@ while (isRunning)
           }
           if (othersCards)
           {
-            Console.WriteLine("\nOther players cards\n");
-            foreach (Player showPlayer in playersList)
+            if (activePlayersCount > 1)
             {
-              if (showPlayer != player && showPlayer.Active)
+              Console.WriteLine("\nOther players cards\n");
+              foreach (Player showPlayer in playersList)
               {
-                Console.WriteLine($"{showPlayer.Name} || their cards are worth: {showPlayer.CountScore()} points.");
-                showPlayer.ShowCards(false);
+                if (showPlayer != player && showPlayer.Active)
+                {
+                  Console.WriteLine($"{showPlayer.Name} {(showPlayer.PlayerCards.Count > 0 ? $"|| their cards are worth: {showPlayer.CountScore()} points." : "has no cards yet.")}");
+                  if (showPlayer.PlayerCards.Count > 0) { showPlayer.ShowCards(false); }
+                }
               }
+              Console.WriteLine("------------------------------------------------\n");
             }
+            else { othersCards = false; }
           }
           if (activePlayersCount > 1)
           {
@@ -366,7 +375,13 @@ void ShowScoreBoard(bool inRound)
       Console.Write($"| {player.Score} pts.  ||  {(player.Active ? "playing" : "out")}");
       Console.WriteLine();
     }
-    else { Console.WriteLine($"{player.Name}: {player.Score}"); }
+    else
+    {
+      Console.Write($"{player.Name}  ");
+      for (int i = 0; i < (longestName - player.Name.Length); ++i) { Console.Write(" "); }
+      Console.Write($"| {player.Score}");
+      Console.WriteLine();
+    }
     Console.ResetColor();
   }
   if (longestName < 24) { Console.Write("\n------------------------------------------------"); }
