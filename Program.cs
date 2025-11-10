@@ -151,6 +151,7 @@ while (isRunning)
                 showPlayer.ShowCards(false);
               }
             }
+            Console.WriteLine("------------------------------------------------\n");
           }
           string[] mainOptions = ["Draw", "Stay", "Other players cards", "Score board"];
           switch (NavMenuKeys(mainOptions, true))
@@ -191,7 +192,6 @@ while (isRunning)
               else { scoreBoard = false; }
               break;
           }
-
         }
         if (player.Active)
         {
@@ -345,19 +345,37 @@ int RandomCard()
 // Method to show score board.
 void ShowScoreBoard(bool inRound)
 {
+  int longestName = 0;
+  foreach (Player player in playersList)
+  {
+    if (player.Name.Length > longestName)
+    { longestName = player.Name.Length; }
+  }
   Console.WriteLine("\nSCORE BOARD\n");
   foreach (Player player in playersList)
   {
+    if (playersList.IndexOf(player) % 2 == 0)
+    {
+      Console.BackgroundColor = ConsoleColor.DarkGray;
+    }
+    Console.ForegroundColor = ConsoleColor.White;
     if (inRound)
     {
-      Console.Write($"{player.Name}: {player.Score} | {(player.Active ? "playing" : "out")}");
+      Console.Write($"{player.Name}  ");
+      for (int i = 0; i < (longestName - player.Name.Length); ++i) { Console.Write(" "); }
+      Console.Write($"| {player.Score} pts.  ||  {(player.Active ? "playing" : "out")}");
+      Console.WriteLine();
     }
-    else { Console.Write($"{player.Name}: {player.Score}"); }
-    if ((playersList.IndexOf(player) + 1) % 2 != 0) { Console.Write(" |    | "); }
-    if ((playersList.IndexOf(player) + 1) % 2 == 0) { Console.WriteLine(""); }
-
+    else { Console.WriteLine($"{player.Name}: {player.Score}"); }
+    Console.ResetColor();
   }
-  Console.WriteLine("\n------------------------------");
+  if (longestName < 24) { Console.Write("\n------------------------------------------------"); }
+  else
+  {
+    Console.Write("\n-----------------------");
+    for (int i = 0; i < longestName; ++i) { Console.Write("-"); }
+  }
+  Console.WriteLine("\n");
 }
 
 // Method to select a player to freeze/flip 3
