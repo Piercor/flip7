@@ -372,14 +372,14 @@ void ShowScoreBoard(bool inRound)
     {
       Console.Write($"{player.Name}  ");
       for (int i = 0; i < (longestName - player.Name.Length); ++i) { Console.Write(" "); }
-      Console.Write($"| {player.Score} pts.  ||  {(player.Active ? "playing" : "out")}");
+      Console.Write($"|{(player.Score < 100 ? " " : "")}{(player.Score < 10 ? " " : "")} {player.Score} pts.  ||  {(player.Active ? "playing" : "    out")}");
       Console.WriteLine();
     }
     else
     {
       Console.Write($"{player.Name}  ");
       for (int i = 0; i < (longestName - player.Name.Length); ++i) { Console.Write(" "); }
-      Console.Write($"| {player.Score}");
+      Console.Write($"|{(player.Score < 100 ? " " : "")}{(player.Score < 10 ? " " : "")} {player.Score}");
       Console.WriteLine();
     }
     Console.ResetColor();
