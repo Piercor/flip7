@@ -103,6 +103,7 @@ while (isRunning)
       break;
     case 1:
       isRunning = false;
+      TryClear();
       break;
   }
 
@@ -143,15 +144,7 @@ while (isRunning)
           {
             if (activePlayersCount > 1)
             {
-              Console.WriteLine("\nOther players cards\n");
-              foreach (Player showPlayer in playersList)
-              {
-                if (showPlayer != player && showPlayer.Active)
-                {
-                  Console.WriteLine($"{showPlayer.Name} {(showPlayer.PlayerCards.Count > 0 ? $"|| their cards are worth: {showPlayer.CountScore()} points." : "has no cards yet.")}");
-                  if (showPlayer.PlayerCards.Count > 0) { showPlayer.ShowCards(false); }
-                }
-              }
+              ShowOthersCards(player);
               Console.WriteLine("------------------------------------------------\n");
             }
             else { othersCards = false; }
@@ -203,12 +196,14 @@ while (isRunning)
                   playing = false;
                   round = false;
                   inGame = false;
+                  playersList.Clear();
                   break;
                 case 1:
                   playing = false;
                   round = false;
                   inGame = false;
                   isRunning = false;
+                  TryClear();
                   break;
                 case 2: continue;
               }
@@ -236,15 +231,7 @@ while (isRunning)
             {
               if (activePlayersCount > 1)
               {
-                Console.WriteLine("\nOther players cards\n");
-                foreach (Player showPlayer in playersList)
-                {
-                  if (showPlayer != player && showPlayer.Active)
-                  {
-                    Console.WriteLine($"{showPlayer.Name} {(showPlayer.PlayerCards.Count > 0 ? $"|| their cards are worth: {showPlayer.CountScore()} points." : "has no cards yet.")}");
-                    if (showPlayer.PlayerCards.Count > 0) { showPlayer.ShowCards(false); }
-                  }
-                }
+                ShowOthersCards(player);
                 Console.WriteLine("------------------------------------------------\n");
               }
               else { othersCards = false; }
@@ -343,6 +330,7 @@ while (isRunning)
       Console.Write("\nPress ENTER to finish. ");
       Console.ReadLine();
       inGame = false;
+      playersList.Clear();
       break;
     }
     if (inGame)
@@ -416,7 +404,19 @@ void ShowScoreBoard(bool inRound)
   }
   Console.WriteLine("\n");
 }
-
+// Method to show other players cards
+void ShowOthersCards(Player player)
+{
+  Console.WriteLine("\nOther players cards\n");
+  foreach (Player showPlayer in playersList)
+  {
+    if (showPlayer != player && showPlayer.Active)
+    {
+      Console.WriteLine($"{showPlayer.Name} {(showPlayer.PlayerCards.Count > 0 ? $"|| their cards are worth: {showPlayer.CountScore()} points." : "has no cards yet.")}");
+      if (showPlayer.PlayerCards.Count > 0) { showPlayer.ShowCards(false); }
+    }
+  }
+}
 // Method to select a player to freeze/flip 3
 Player SelectedPlayer(Player player, bool freeze)
 {
