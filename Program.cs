@@ -103,6 +103,7 @@ while (isRunning)
       break;
     case 1:
       isRunning = false;
+      TryClear();
       break;
   }
 
@@ -203,12 +204,14 @@ while (isRunning)
                   playing = false;
                   round = false;
                   inGame = false;
+                  playersList.Clear();
                   break;
                 case 1:
                   playing = false;
                   round = false;
                   inGame = false;
                   isRunning = false;
+                  TryClear();
                   break;
                 case 2: continue;
               }
@@ -343,6 +346,7 @@ while (isRunning)
       Console.Write("\nPress ENTER to finish. ");
       Console.ReadLine();
       inGame = false;
+      playersList.Clear();
       break;
     }
     if (inGame)
