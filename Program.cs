@@ -238,34 +238,11 @@ while (isRunning)
                         }
                         if (activePlayersCount > 1)
                         {
-                            string[] stayOrContinue = ["Continue", "Stay"];
+                            string[] stayOrContinue = ["Next player turn"];
 
                             switch (NavMenuKeys(stayOrContinue, true))
                             {
                                 case 0: continue;
-                                case 1:
-                                    Console.WriteLine("");
-                                    string[] confirmStay = ["Confirm", "Keep playing"];
-                                    switch (NavMenuKeys(confirmStay, true))
-                                    {
-                                        case 0:
-                                            player.Score += player.CountScore();
-                                            playing = false;
-                                            player.Active = false;
-                                            Console.WriteLine("");
-                                            Console.WriteLine($"\nYour score this round is {player.CountScore()}");
-                                            Console.WriteLine($"Your total score is {player.Score}");
-                                            Console.Write("\nPress any key to continue. ");
-                                            Console.ReadKey(intercept: true);
-                                            player.EmptyPlayerCards(deck);
-                                            break;
-                                        case 1:
-                                            Console.WriteLine("");
-                                            Console.Write("\nYou still playing. Press ENTER to continue. ");
-                                            Console.ReadKey(intercept: true);
-                                            break;
-                                    }
-                                    continue;
                             }
                         }
                     }
