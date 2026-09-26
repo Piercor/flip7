@@ -140,6 +140,7 @@ public static class GameUtility
                 }
                 else
                 {
+                    TryClear();
                     Console.WriteLine($"Unfortunately, you have a Second Chance and nobody else\ncan have it, so you have to discard it!");
                     Console.Write("Press any key to continue");
                     Console.ReadKey(true);
@@ -360,13 +361,7 @@ public static class GameUtility
     // Method to select a player to freeze/flip 3
     public static Player SelectedPlayer(Player player, string actionCard, List<Player> playersList)
     {
-        List<Player> activePlayersList = new();
-
-        foreach (Player activePlayer in playersList)
-        {
-            if (activePlayer.Active == true)
-            { activePlayersList.Add(activePlayer); }
-        }
+        List<Player> activePlayersList = playersList.Where(p => p.Active).ToList();
 
         string[] activePlayersArray = new string[activePlayersList.Count];
 
@@ -396,7 +391,7 @@ public static class GameUtility
 
                 chosePlayer.ShowCards(false);
             }
-            Console.WriteLine($"\nSelect player to {actionCard} :\n");
+            Console.WriteLine($"\nSelect player to {actionCard}:\n");
             Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
             return selectedPlayer;
         }
@@ -419,7 +414,7 @@ public static class GameUtility
 
                 chosePlayer.ShowCards(false);
             }
-            Console.WriteLine($"\nSelect player to give the {actionCard} :\n");
+            Console.WriteLine($"\nSelect player to give the {actionCard}:\n");
             Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
             return selectedPlayer;
         }
