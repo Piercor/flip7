@@ -5,40 +5,46 @@ using App;
 
 Deck deck = new();
 List<Player> playersList = new();
-List<ConsoleColor> colors = new();
-colors.Add(ConsoleColor.Blue);
-colors.Add(ConsoleColor.DarkYellow);
-colors.Add(ConsoleColor.DarkGreen);
-colors.Add(ConsoleColor.Magenta);
-colors.Add(ConsoleColor.White);
-colors.Add(ConsoleColor.DarkCyan);
-colors.Add(ConsoleColor.Red);
-colors.Add(ConsoleColor.DarkYellow);
-colors.Add(ConsoleColor.Gray);
-colors.Add(ConsoleColor.Green);
-int pointsToReach = 200;
+List<ConsoleColor> colors = new([
+    ConsoleColor.Blue,
+    ConsoleColor.DarkYellow,
+    ConsoleColor.DarkGreen,
+    ConsoleColor.Magenta,
+    ConsoleColor.White,
+    ConsoleColor.DarkCyan,
+    ConsoleColor.Red,
+    ConsoleColor.DarkYellow,
+    ConsoleColor.Gray,
+    ConsoleColor.Green
+]);
+
+
 bool isRunning = true;
 
 while (isRunning)
 {
-    TryClear();
+    GameUtility.TryClear();
 
     Console.WriteLine("\nFLIP 7\n");
+
+    int pointsToReach = 200;
+
     bool inGame = false;
+
     string[] firstOptions = ["New game", "Quit"];
-    switch (NavMenuKeys(firstOptions, false))
+    switch (GameUtility.NavMenuKeys(firstOptions, false))
     {
         case 0:
             bool preGame = true;
             while (preGame)
             {
-                TryClear();
+                GameUtility.TryClear();
                 Console.WriteLine("\nHow many players (min. 3, max. 10)?");
                 Console.Write("▶ ");
 
                 if (int.TryParse(Console.ReadLine(), out int playersNumb) && playersNumb > 2 && playersNumb <= 10)
                 {
-                    TryClear();
+                    GameUtility.TryClear();
                     Console.WriteLine("\nInsert players names\n");
                     for (int i = 0; i < playersNumb; ++i)
                     {
@@ -53,7 +59,7 @@ while (isRunning)
                             string? newPlayerName = Console.ReadLine();
                             if (!string.IsNullOrWhiteSpace(newPlayerName))
                             {
-                                playersList.Add(CreatePlayer(newPlayerName));
+                                playersList.Add(GameUtility.CreatePlayer(newPlayerName));
                                 playersList[i].Color = colors[i];
                                 creating = false;
                             }
@@ -77,7 +83,7 @@ while (isRunning)
                 if (playersList.Count >= 3 && playersList.Count <= 10)
                 {
                     inGame = true;
-                    TryClear();
+                    GameUtility.TryClear();
                     Console.WriteLine("\nPoints to reach? (200 by default)?");
                     Console.Write("▶ ");
                     if (int.TryParse(Console.ReadLine(), out int userPoints) && playersNumb > 2 && playersNumb <= 10)
@@ -85,7 +91,7 @@ while (isRunning)
                         pointsToReach = userPoints;
                     }
 
-                    TryClear();
+                    GameUtility.TryClear();
                     Console.WriteLine("\nLet's play!\n");
                     for (int i = 0; i < playersList.Count; ++i)
                     {
@@ -103,7 +109,7 @@ while (isRunning)
             break;
         case 1:
             isRunning = false;
-            TryClear();
+            GameUtility.TryClear();
             break;
     }
 
@@ -127,7 +133,7 @@ while (isRunning)
                 }
                 while (playing)
                 {
-                    TryClear();
+                    GameUtility.TryClear();
                     Console.WriteLine($"\nRound {roundCount}.\n");
                     Console.BackgroundColor = player.Color;
                     Console.ForegroundColor = ConsoleColor.Black;
@@ -138,29 +144,29 @@ while (isRunning)
                     player.ShowCards(true);
                     if (scoreBoard)
                     {
-                        ShowScoreBoard(true);
+                        GameUtility.ShowScoreBoard(true, playersList);
                     }
                     if (othersCards)
                     {
                         if (activePlayersCount > 1)
                         {
-                            ShowOthersCards(player);
+                            GameUtility.ShowOthersCards(player, playersList);
                             Console.WriteLine("------------------------------------------------\n");
                         }
                         else { othersCards = false; }
                     }
                     string[] mainOptions = ["Draw", "Stay", "Other players cards", "Score board", "Quit"];
-                    switch (NavMenuKeys(mainOptions, true))
+                    switch (GameUtility.NavMenuKeys(mainOptions, true))
                     {
                         case 0:
-                            DrawACard(player);
+                            GameUtility.DrawACard(player, deck, playersList);
                             playing = false;
                             break;
 
                         case 1:
                             Console.WriteLine("");
                             string[] confirmStay = ["Stay", "Keep playing"];
-                            switch (NavMenuKeys(confirmStay, true))
+                            switch (GameUtility.NavMenuKeys(confirmStay, true))
                             {
                                 case 0:
                                     player.Score += player.CountScore();
@@ -190,7 +196,7 @@ while (isRunning)
                         case 4:
                             Console.WriteLine("");
                             string[] quitOptions = ["To main menu", "To desktop", "Cancel"];
-                            switch (NavMenuKeys(quitOptions, true))
+                            switch (GameUtility.NavMenuKeys(quitOptions, true))
                             {
                                 case 0:
                                     playing = false;
@@ -203,7 +209,7 @@ while (isRunning)
                                     round = false;
                                     inGame = false;
                                     isRunning = false;
-                                    TryClear();
+                                    GameUtility.TryClear();
                                     break;
                                 case 2: continue;
                             }
@@ -214,7 +220,7 @@ while (isRunning)
                 {
                     if (player.Active)
                     {
-                        TryClear();
+                        GameUtility.TryClear();
                         Console.WriteLine($"\nRound {roundCount}.\n");
                         Console.BackgroundColor = player.Color;
                         Console.ForegroundColor = ConsoleColor.Black;
@@ -225,13 +231,13 @@ while (isRunning)
                         player.ShowCards(true);
                         if (scoreBoard)
                         {
-                            ShowScoreBoard(true);
+                            GameUtility.ShowScoreBoard(true, playersList);
                         }
                         if (othersCards)
                         {
                             if (activePlayersCount > 1)
                             {
-                                ShowOthersCards(player);
+                                GameUtility.ShowOthersCards(player, playersList);
                                 Console.WriteLine("------------------------------------------------\n");
                             }
                             else { othersCards = false; }
@@ -240,7 +246,7 @@ while (isRunning)
                         {
                             string[] stayOrContinue = ["Next player turn"];
 
-                            switch (NavMenuKeys(stayOrContinue, true))
+                            switch (GameUtility.NavMenuKeys(stayOrContinue, true))
                             {
                                 case 0: continue;
                             }
@@ -264,31 +270,14 @@ while (isRunning)
                 round = false;
             }
         }
-        bool winnerFound = false;
-        foreach (Player player in playersList)
-        {
-            player.Active = true;
-            if (player.Score >= pointsToReach)
-            {
-                winnerFound = true;
-            }
-        }
+
+        bool winnerFound = playersList.Any(p => { p.Active = true; return p.Score >= pointsToReach; }) ? true : false;
+
         if (winnerFound)
         {
-            for (int tries = 0; tries < playersList.Count; ++tries)
-            {
-                for (int i = 1; i < playersList.Count; ++i)
-                {
-                    Player? current = playersList[i];
-                    Player? prev = playersList[i - 1];
-                    if (current.Score > prev.Score)
-                    {
-                        playersList[i] = prev;
-                        playersList[i - 1] = current;
-                    }
-                }
-            }
-            TryClear();
+            playersList = playersList.OrderByDescending(p => p.Score).ToList();
+
+            GameUtility.TryClear();
             if (playersList[0].Score == playersList[1].Score)
             {
                 Console.WriteLine("\nWe have a tie!");
@@ -299,6 +288,7 @@ while (isRunning)
                 Console.WriteLine($"\nContratulations, {playersList[0].Name}!");
             }
             Console.WriteLine($"\nFinal score board: \n");
+
             for (int i = 0; i < playersList.Count; ++i)
             {
                 Console.WriteLine($"[{i + 1}] {playersList[i].PlayerInfo()}");
@@ -312,316 +302,13 @@ while (isRunning)
         }
         if (inGame)
         {
-            TryClear();
+            GameUtility.TryClear();
             Console.WriteLine($"\nScores after round {roundCount}.");
-            ShowScoreBoard(false);
+            GameUtility.ShowScoreBoard(false, playersList);
             Console.Write("\nPress any key to start next round. ");
             Console.ReadKey(intercept: true);
             continue;
         }
         else { break; }
     }
-}
-
-// Method to clear console.
-void TryClear()
-{
-    try { Console.Clear(); } catch { }
-}
-// Method to create player.
-Player CreatePlayer(string name)
-{
-    return new(name, 0);
-}
-// Method to draw a random card.
-int RandomCard()
-{
-    Random rnd = new();
-
-    return rnd.Next(deck.CardDeck.Count);
-}
-// Method to show score board.
-void ShowScoreBoard(bool inRound)
-{
-    int longestName = 0;
-    foreach (Player player in playersList)
-    {
-        if (player.Name.Length > longestName)
-        { longestName = player.Name.Length; }
-    }
-    Console.WriteLine("\nSCORE BOARD\n");
-    foreach (Player player in playersList)
-    {
-        if (playersList.IndexOf(player) % 2 == 0)
-        {
-            Console.BackgroundColor = ConsoleColor.DarkGray;
-        }
-        Console.ForegroundColor = ConsoleColor.White;
-        if (inRound)
-        {
-            Console.Write($"{player.Name}  ");
-            for (int i = 0; i < (longestName - player.Name.Length); ++i) { Console.Write(" "); }
-            Console.Write($"|{(player.Score < 100 ? " " : "")}{(player.Score < 10 ? " " : "")} {player.Score} pts.  ||  {(player.Active ? "playing" : "    out")}");
-            Console.WriteLine();
-        }
-        else
-        {
-            Console.Write($"{player.Name}  ");
-            for (int i = 0; i < (longestName - player.Name.Length); ++i) { Console.Write(" "); }
-            Console.Write($"|{(player.Score < 100 ? " " : "")}{(player.Score < 10 ? " " : "")} {player.Score}");
-            Console.WriteLine();
-        }
-        Console.ResetColor();
-    }
-    if (longestName < 24) { Console.Write("\n------------------------------------------------"); }
-    else
-    {
-        Console.Write("\n-----------------------");
-        for (int i = 0; i < longestName; ++i) { Console.Write("-"); }
-    }
-    Console.WriteLine("\n");
-}
-// Method to show other players cards
-void ShowOthersCards(Player player)
-{
-    Console.WriteLine("\nOther players cards\n");
-    foreach (Player showPlayer in playersList)
-    {
-        if (showPlayer != player && showPlayer.Active)
-        {
-            Console.WriteLine($"{showPlayer.Name} {(showPlayer.PlayerCards.Count > 0 ? $"|| their cards are worth: {showPlayer.CountScore()} points." : "has no cards yet.")}");
-            if (showPlayer.PlayerCards.Count > 0) { showPlayer.ShowCards(false); }
-        }
-    }
-}
-// Method to select a player to freeze/flip 3
-Player SelectedPlayer(Player player, bool freeze)
-{
-    List<Player> activePlayersList = new();
-    foreach (Player activePlayer in playersList)
-    {
-        if (activePlayer.Active == true)
-        { activePlayersList.Add(activePlayer); }
-    }
-    string[] activePlayersArray = new string[activePlayersList.Count];
-    Console.WriteLine("");
-    foreach (Player chosePlayer in activePlayersList)
-    {
-        if (chosePlayer == player)
-        {
-            Console.BackgroundColor = chosePlayer.Color;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write($" (myself) ");
-            Console.ResetColor();
-            Console.WriteLine($"|| my cards are worth: {chosePlayer.CountScore()} points. My score right now is {chosePlayer.Score} pts.");
-            activePlayersArray[activePlayersList.IndexOf(chosePlayer)] = $"(myself)";
-        }
-        else
-        {
-            Console.BackgroundColor = chosePlayer.Color;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write($" {chosePlayer.Name} ");
-            Console.ResetColor();
-            Console.WriteLine($"|| their cards are worth: {chosePlayer.CountScore()} points. Their score right now is {chosePlayer.Score} pts.");
-            activePlayersArray[activePlayersList.IndexOf(chosePlayer)] = $"{chosePlayer.Name}";
-        }
-
-        chosePlayer.ShowCards(false);
-    }
-    Console.WriteLine($"\nSelect player to {(freeze ? "freeze" : "flip 3")} :\n");
-    Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
-    return selectedPlayer;
-}
-// Method to draw a card.
-void DrawACard(Player player)
-{
-    Card? drawnCard = deck.CardDeck[RandomCard()];
-    Console.WriteLine($"");
-    Console.WriteLine($"\nDrawn card:");
-    Console.Write($" ");
-    Console.BackgroundColor = drawnCard.BackColor;
-    Console.ForegroundColor = drawnCard.FrontColor;
-    Console.WriteLine($"\n{drawnCard.CardInfo()}");
-    Console.ResetColor();
-    deck.CardDeck.Remove(drawnCard);
-    deck.DeckReshuffle();
-    Thread.Sleep(500);
-    switch (drawnCard.CardType)
-    {
-        case CardType.Modifier: player.PlayerCards.Add(drawnCard); return;
-        case CardType.Double: player.PlayerCards.Add(drawnCard); return;
-        case CardType.SecondChance: player.PlayerCards.Add(drawnCard); return;
-        case CardType.Normal:
-            if (player.CheckBusted(drawnCard))
-            {
-                bool foundSecondChance = false;
-                foreach (Card secondChanceCard in player.PlayerCards)
-                {
-                    if (secondChanceCard.CardType == CardType.SecondChance)
-                    {
-                        foundSecondChance = true;
-                        player.PlayerCards.Remove(secondChanceCard);
-                        deck.DiscardPile.Add(secondChanceCard);
-                        break;
-                    }
-                }
-                if (!foundSecondChance)
-                {
-                    Console.WriteLine("\nB U S T E D !");
-                    Console.Write("\nPress any key to continue. ");
-                    Console.ReadKey(intercept: true);
-                    player.PlayerCards.Add(drawnCard);
-                    player.EmptyPlayerCards(deck);
-                    player.Active = false;
-                    return;
-                }
-                else
-                {
-                    deck.DiscardPile.Add(drawnCard);
-                    Console.WriteLine("\nThat was close! Luckily you had a Second Chance to save you!");
-                    Console.Write("\nPress any key to continue. ");
-                    Console.ReadKey(intercept: true);
-                    return;
-                }
-            }
-            player.PlayerCards.Add(drawnCard);
-            if (player.CheckFlip7())
-            {
-                player.Score += player.CountScore();
-                player.Score += 15;
-                Console.WriteLine("\n F L I P  7 !");
-                Console.WriteLine($"\nYour score this round is {player.CountScore() + 15}");
-                Console.WriteLine($"Your total score is {player.Score}");
-                Console.Write("\nPress any key to continue. ");
-                Console.ReadKey(intercept: true);
-                player.EmptyPlayerCards(deck);
-                player.Active = false;
-            }
-            return;
-
-        case CardType.Freeze:
-            deck.DiscardPile.Add(drawnCard);
-            Thread.Sleep(1000);
-            TryClear();
-            Console.WriteLine("\nF R E E Z E");
-
-            Console.WriteLine("\nSelect player to freeze:\n");
-
-            Player playerToFreeze = SelectedPlayer(player, true);
-            TryClear();
-            playerToFreeze.Score += playerToFreeze.CountScore();
-            Console.WriteLine("\n");
-            Console.BackgroundColor = playerToFreeze.Color;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write($"\n{playerToFreeze.Name}");
-            Console.ResetColor();
-            Console.WriteLine(" is now frozen for this round!");
-            Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
-            Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
-            playerToFreeze.EmptyPlayerCards(deck);
-            playerToFreeze.Active = false;
-            Console.Write("\nPress any key to continue. ");
-            Console.ReadKey(intercept: true);
-            return;
-
-        case CardType.FlipThree:
-            deck.DiscardPile.Add(drawnCard);
-            Thread.Sleep(1000);
-            TryClear();
-            Console.WriteLine("\nF L I P  3");
-            Player playerToFlip3 = SelectedPlayer(player, false);
-            bool flipping = true;
-            int flipped = 3;
-            while (flipping)
-            {
-                TryClear();
-                Console.WriteLine("");
-                Console.BackgroundColor = playerToFlip3.Color;
-                Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($"\n{playerToFlip3.Name}");
-                Console.ResetColor();
-                Console.WriteLine($" have to flip {flipped} {(flipped == 3 ? "card" : "more card") + (flipped > 1 ? "s." : ".")}");
-                Console.WriteLine($"\n{playerToFlip3.Name}'s cards:\n");
-                playerToFlip3.ShowCards(false);
-                if (playerToFlip3.Active && flipped > 0)
-                {
-                    DrawACard(playerToFlip3); flipped--;
-                }
-                else
-                {
-                    flipping = false;
-                    break;
-                }
-                if (playerToFlip3.Active && flipped > 0)
-                {
-                    Console.Write("\nPress any key to flip next card. ");
-                    Console.ReadKey(intercept: true);
-                }
-                else if (playerToFlip3.Active)
-                {
-                    Console.Write("\nPress any key to continue. ");
-                    Console.ReadKey(intercept: true);
-                }
-            }
-            return;
-    }
-}
-void NavMenu(int selectedIndex, string[] menuOptions, bool horizontal)
-{
-    int cursorPosition = Console.CursorTop;
-    Console.SetCursorPosition(0, cursorPosition);
-    for (int i = 0; i < menuOptions.Length; ++i)
-    {
-        if (i == selectedIndex)
-        {
-            Console.BackgroundColor = ConsoleColor.DarkMagenta;
-            if (horizontal)
-            { Console.Write($"  {menuOptions[i]} "); }
-            else { Console.WriteLine($"  {menuOptions[i]} "); }
-            Console.ResetColor();
-        }
-        else
-        {
-            if (horizontal)
-            { Console.Write($" {menuOptions[i]}  "); }
-            else { Console.WriteLine($" {menuOptions[i]}  "); }
-        }
-    }
-    Console.SetCursorPosition(0, cursorPosition);
-}
-int NavMenuKeys(string[] menuOptions, bool horizontal)
-{
-    ConsoleKey? upLeft = ConsoleKey.UpArrow;
-    ConsoleKey? downRight = ConsoleKey.DownArrow;
-    if (horizontal)
-    {
-        upLeft = ConsoleKey.LeftArrow;
-        downRight = ConsoleKey.RightArrow;
-    }
-
-    bool inMenu = true;
-    int selectedIndex = 0;
-    int selectedOption = 0;
-    while (inMenu)
-    {
-        NavMenu(selectedIndex, menuOptions, horizontal);
-        switch (Console.ReadKey(intercept: true).Key)
-        {
-            case var k when k == upLeft:
-                selectedIndex--;
-                if (selectedIndex < 0)
-                { selectedIndex = menuOptions.Length - 1; }
-                break;
-            case var k when k == downRight:
-                selectedIndex++;
-                if (selectedIndex >= menuOptions.Length)
-                { selectedIndex = 0; }
-                break;
-            case ConsoleKey.Enter:
-                selectedOption = selectedIndex;
-                inMenu = false;
-                break;
-        }
-    }
-    return selectedOption;
 }
