@@ -2,11 +2,13 @@ namespace App;
 
 public static class GameUtility
 {
-    // Method to use arrows to select options 
+    // Method to create a menu (only used by NavMenuKeys) 
     public static void NavMenu(int selectedIndex, string[] menuOptions, bool horizontal)
     {
         int cursorPosition = Console.CursorTop;
+
         Console.SetCursorPosition(0, cursorPosition);
+
         for (int i = 0; i < menuOptions.Length; ++i)
         {
             if (i == selectedIndex)
@@ -14,6 +16,7 @@ public static class GameUtility
                 Console.BackgroundColor = ConsoleColor.DarkMagenta;
                 if (horizontal)
                 { Console.Write($"  {menuOptions[i]} "); }
+
                 else { Console.WriteLine($"  {menuOptions[i]} "); }
                 Console.ResetColor();
             }
@@ -21,15 +24,19 @@ public static class GameUtility
             {
                 if (horizontal)
                 { Console.Write($" {menuOptions[i]}  "); }
+
                 else { Console.WriteLine($" {menuOptions[i]}  "); }
             }
         }
         Console.SetCursorPosition(0, cursorPosition);
     }
+
+    // Method to use arrows to select menu options 
     public static int NavMenuKeys(string[] menuOptions, bool horizontal)
     {
         ConsoleKey? upLeft = ConsoleKey.UpArrow;
         ConsoleKey? downRight = ConsoleKey.DownArrow;
+
         if (horizontal)
         {
             upLeft = ConsoleKey.LeftArrow;
@@ -39,6 +46,7 @@ public static class GameUtility
         bool inMenu = true;
         int selectedIndex = 0;
         int selectedOption = 0;
+
         while (inMenu)
         {
             NavMenu(selectedIndex, menuOptions, horizontal);
@@ -49,11 +57,13 @@ public static class GameUtility
                     if (selectedIndex < 0)
                     { selectedIndex = menuOptions.Length - 1; }
                     break;
+
                 case var k when k == downRight:
                     selectedIndex++;
                     if (selectedIndex >= menuOptions.Length)
                     { selectedIndex = 0; }
                     break;
+
                 case ConsoleKey.Enter:
                     selectedOption = selectedIndex;
                     inMenu = false;
@@ -87,6 +97,7 @@ public static class GameUtility
     public static void DrawACard(Player player, Deck deck, List<Player> playersList)
     {
         Card? drawnCard = deck.CardDeck[RandomCard(deck)];
+
         Console.WriteLine($"");
         Console.WriteLine($"\nDrawn card:");
         Console.Write($" ");
@@ -94,18 +105,22 @@ public static class GameUtility
         Console.ForegroundColor = drawnCard.FrontColor;
         Console.WriteLine($"\n{drawnCard.CardInfo()}");
         Console.ResetColor();
+
         deck.CardDeck.Remove(drawnCard);
         deck.DeckReshuffle();
         Thread.Sleep(500);
+
         switch (drawnCard.CardType)
         {
             case CardType.Modifier: player.PlayerCards.Add(drawnCard); return;
             case CardType.Double: player.PlayerCards.Add(drawnCard); return;
             case CardType.SecondChance: player.PlayerCards.Add(drawnCard); return;
+
             case CardType.Normal:
                 if (player.CheckBusted(drawnCard))
                 {
                     bool foundSecondChance = false;
+
                     foreach (Card secondChanceCard in player.PlayerCards)
                     {
                         if (secondChanceCard.CardType == CardType.SecondChance)
@@ -116,6 +131,7 @@ public static class GameUtility
                             break;
                         }
                     }
+
                     if (!foundSecondChance)
                     {
                         Console.WriteLine("\nB U S T E D !");
@@ -135,7 +151,9 @@ public static class GameUtility
                         return;
                     }
                 }
+
                 player.PlayerCards.Add(drawnCard);
+
                 if (player.CheckFlip7())
                 {
                     player.Score += player.CountScore();
@@ -151,16 +169,21 @@ public static class GameUtility
                 return;
 
             case CardType.Freeze:
+
                 deck.DiscardPile.Add(drawnCard);
                 Thread.Sleep(1000);
+
                 TryClear();
                 Console.WriteLine("\nF R E E Z E");
 
                 Console.WriteLine("\nSelect player to freeze:\n");
 
                 Player playerToFreeze = SelectedPlayer(player, true, playersList);
+
                 TryClear();
+
                 playerToFreeze.Score += playerToFreeze.CountScore();
+
                 Console.WriteLine("\n");
                 Console.BackgroundColor = playerToFreeze.Color;
                 Console.ForegroundColor = ConsoleColor.Black;
@@ -169,23 +192,30 @@ public static class GameUtility
                 Console.WriteLine(" is now frozen for this round!");
                 Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
                 Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
+
                 playerToFreeze.EmptyPlayerCards(deck);
                 playerToFreeze.Active = false;
+
                 Console.Write("\nPress any key to continue. ");
                 Console.ReadKey(intercept: true);
                 return;
 
             case CardType.FlipThree:
+
                 deck.DiscardPile.Add(drawnCard);
                 Thread.Sleep(1000);
+
                 TryClear();
                 Console.WriteLine("\nF L I P  3");
+
                 Player playerToFlip3 = SelectedPlayer(player, false, playersList);
                 bool flipping = true;
                 int flipped = 3;
+
                 while (flipping)
                 {
                     TryClear();
+
                     Console.WriteLine("");
                     Console.BackgroundColor = playerToFlip3.Color;
                     Console.ForegroundColor = ConsoleColor.Black;
@@ -193,7 +223,9 @@ public static class GameUtility
                     Console.ResetColor();
                     Console.WriteLine($" have to flip {flipped} {(flipped == 3 ? "card" : "more card") + (flipped > 1 ? "s." : ".")}");
                     Console.WriteLine($"\n{playerToFlip3.Name}'s cards:\n");
+
                     playerToFlip3.ShowCards(false);
+
                     if (playerToFlip3.Active && flipped > 0)
                     {
                         DrawACard(playerToFlip3, deck, playersList); flipped--;
@@ -203,6 +235,7 @@ public static class GameUtility
                         flipping = false;
                         break;
                     }
+
                     if (playerToFlip3.Active && flipped > 0)
                     {
                         Console.Write("\nPress any key to flip next card. ");
@@ -221,13 +254,10 @@ public static class GameUtility
     // Method to show score board.
     public static void ShowScoreBoard(bool inRound, List<Player> playersList)
     {
-        int longestName = 0;
-        foreach (Player player in playersList)
-        {
-            if (player.Name.Length > longestName)
-            { longestName = player.Name.Length; }
-        }
+        int longestName = playersList.OrderByDescending(p => p.Name.Length).ToList()[0].Name.Length;
+
         Console.WriteLine("\nSCORE BOARD\n");
+
         foreach (Player player in playersList)
         {
             if (playersList.IndexOf(player) % 2 == 0)
@@ -235,6 +265,7 @@ public static class GameUtility
                 Console.BackgroundColor = ConsoleColor.DarkGray;
             }
             Console.ForegroundColor = ConsoleColor.White;
+
             if (inRound)
             {
                 Console.Write($"{player.Name}  ");
@@ -251,6 +282,7 @@ public static class GameUtility
             }
             Console.ResetColor();
         }
+
         if (longestName < 24) { Console.Write("\n------------------------------------------------"); }
         else
         {
@@ -264,6 +296,7 @@ public static class GameUtility
     public static void ShowOthersCards(Player player, List<Player> playersList)
     {
         Console.WriteLine("\nOther players cards\n");
+
         foreach (Player showPlayer in playersList)
         {
             if (showPlayer != player && showPlayer.Active)
@@ -278,12 +311,15 @@ public static class GameUtility
     public static Player SelectedPlayer(Player player, bool freeze, List<Player> playersList)
     {
         List<Player> activePlayersList = new();
+
         foreach (Player activePlayer in playersList)
         {
             if (activePlayer.Active == true)
             { activePlayersList.Add(activePlayer); }
         }
+
         string[] activePlayersArray = new string[activePlayersList.Count];
+
         Console.WriteLine("");
         foreach (Player chosePlayer in activePlayersList)
         {
@@ -312,10 +348,4 @@ public static class GameUtility
         Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
         return selectedPlayer;
     }
-
-    // // Method to sort player list
-    // public static List<Player> SortList(List<Player> playersList)
-    // {
-    //     return playersList.OrderByDescending(p => p.Score).ToList();
-    // }
 }
