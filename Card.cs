@@ -2,7 +2,7 @@ using System.Drawing;
 
 namespace App;
 
-class Card
+public class Card
 {
     public string Name;
     public int Value;

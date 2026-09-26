@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace App;
 
-class Deck
+public class Deck
 {
     public List<Card> CardDeck = new();
     public List<Card> DiscardPile = new();

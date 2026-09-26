@@ -1,6 +1,6 @@
 namespace App;
 
-enum CardType
+public enum CardType
 
 {
     Normal,
