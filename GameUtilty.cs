@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace App;
 
 public static class GameUtility
@@ -114,7 +116,37 @@ public static class GameUtility
         {
             case CardType.Modifier: player.PlayerCards.Add(drawnCard); return;
             case CardType.Double: player.PlayerCards.Add(drawnCard); return;
-            case CardType.SecondChance: player.PlayerCards.Add(drawnCard); return;
+            case CardType.SecondChance:
+
+                List<Player> activePlayers = playersList.Where(p => p != player && p.Active).ToList();
+
+                if (!player.PlayerCards.Any(c => c.CardType == CardType.SecondChance))
+                {
+                    player.PlayerCards.Add(drawnCard);
+                }
+                else if (activePlayers.Any(p => !p.PlayerCards.Any(c => c.CardType == CardType.SecondChance)))
+                {
+                    TryClear();
+                    Console.WriteLine("Unfortunately, you already have a Second Chance.\nYou now have to choose another player to give it to.");
+                    Console.Write(" ");
+
+                    Player playerToGiveSecondChance = SelectedPlayer(player, "second chance", playersList);
+                    playerToGiveSecondChance.PlayerCards.Add(drawnCard);
+
+                    TryClear();
+                    Console.WriteLine($"{playerToGiveSecondChance.Name} got your Second Chance!");
+                    Console.Write("Press any key to continue");
+                    Console.ReadKey(true);
+                }
+                else
+                {
+                    Console.WriteLine($"Unfortunately, you have a Second Chance and nobody else\ncan have it, so you have to discard it!");
+                    Console.Write("Press any key to continue");
+                    Console.ReadKey(true);
+                    deck.DiscardPile.Add(drawnCard);
+                }
+
+                return;
 
             case CardType.Normal:
                 if (player.CheckBusted(drawnCard))
@@ -158,9 +190,27 @@ public static class GameUtility
                 {
                     player.Score += player.CountScore();
                     player.Score += 15;
+
+                    List<Player> otherPlayers = playersList.Where(p => p.Active && p != player).ToList();
+
                     Console.WriteLine("\n F L I P  7 !");
                     Console.WriteLine($"\nYour score this round is {player.CountScore() + 15}");
                     Console.WriteLine($"Your total score is {player.Score}");
+
+                    Console.WriteLine($"The remaining players scored:");
+                    foreach (Player rest in otherPlayers)
+                    {
+                        rest.Score += rest.CountScore();
+
+                        Console.BackgroundColor = rest.Color;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.WriteLine($"{rest.Name}: {rest.CountScore()} - Total score: {rest.Score}");
+                        Console.ResetColor();
+
+                        rest.Active = false;
+                        rest.EmptyPlayerCards(deck);
+                    }
+
                     Console.Write("\nPress any key to continue. ");
                     Console.ReadKey(intercept: true);
                     player.EmptyPlayerCards(deck);
@@ -178,7 +228,7 @@ public static class GameUtility
 
                 Console.WriteLine("\nSelect player to freeze:\n");
 
-                Player playerToFreeze = SelectedPlayer(player, true, playersList);
+                Player playerToFreeze = SelectedPlayer(player, "freeze", playersList);
 
                 TryClear();
 
@@ -208,7 +258,7 @@ public static class GameUtility
                 TryClear();
                 Console.WriteLine("\nF L I P  3");
 
-                Player playerToFlip3 = SelectedPlayer(player, false, playersList);
+                Player playerToFlip3 = SelectedPlayer(player, "flip 3", playersList);
                 bool flipping = true;
                 int flipped = 3;
 
@@ -308,7 +358,7 @@ public static class GameUtility
     }
 
     // Method to select a player to freeze/flip 3
-    public static Player SelectedPlayer(Player player, bool freeze, List<Player> playersList)
+    public static Player SelectedPlayer(Player player, string actionCard, List<Player> playersList)
     {
         List<Player> activePlayersList = new();
 
@@ -321,31 +371,57 @@ public static class GameUtility
         string[] activePlayersArray = new string[activePlayersList.Count];
 
         Console.WriteLine("");
-        foreach (Player chosePlayer in activePlayersList)
+        if (actionCard == "freeze" || actionCard == "flip 3")
         {
-            if (chosePlayer == player)
+            foreach (Player chosePlayer in activePlayersList)
             {
-                Console.BackgroundColor = chosePlayer.Color;
-                Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($" (myself) ");
-                Console.ResetColor();
-                Console.WriteLine($"|| my cards are worth: {chosePlayer.CountScore()} points. My score right now is {chosePlayer.Score} pts.");
-                activePlayersArray[activePlayersList.IndexOf(chosePlayer)] = $"(myself)";
-            }
-            else
-            {
-                Console.BackgroundColor = chosePlayer.Color;
-                Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($" {chosePlayer.Name} ");
-                Console.ResetColor();
-                Console.WriteLine($"|| their cards are worth: {chosePlayer.CountScore()} points. Their score right now is {chosePlayer.Score} pts.");
-                activePlayersArray[activePlayersList.IndexOf(chosePlayer)] = $"{chosePlayer.Name}";
-            }
+                if (chosePlayer == player)
+                {
+                    Console.BackgroundColor = chosePlayer.Color;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write($" (myself) ");
+                    Console.ResetColor();
+                    Console.WriteLine($"|| my cards are worth: {chosePlayer.CountScore()} points. My score right now is {chosePlayer.Score} pts.");
+                    activePlayersArray[activePlayersList.IndexOf(chosePlayer)] = $"(myself)";
+                }
+                else
+                {
+                    Console.BackgroundColor = chosePlayer.Color;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write($" {chosePlayer.Name} ");
+                    Console.ResetColor();
+                    Console.WriteLine($"|| their cards are worth: {chosePlayer.CountScore()} points. Their score right now is {chosePlayer.Score} pts.");
+                    activePlayersArray[activePlayersList.IndexOf(chosePlayer)] = $"{chosePlayer.Name}";
+                }
 
-            chosePlayer.ShowCards(false);
+                chosePlayer.ShowCards(false);
+            }
+            Console.WriteLine($"\nSelect player to {actionCard} :\n");
+            Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
+            return selectedPlayer;
         }
-        Console.WriteLine($"\nSelect player to {(freeze ? "freeze" : "flip 3")} :\n");
-        Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
-        return selectedPlayer;
+        else
+        {
+            activePlayersList = activePlayersList.Where(p => p != player && p.Active && !p.PlayerCards.Any(c => c.CardType == CardType.SecondChance)).ToList();
+            activePlayersArray = new string[activePlayersList.Count];
+
+            foreach (Player chosePlayer in activePlayersList)
+            {
+                if (chosePlayer.Active && chosePlayer != player)
+                {
+                    Console.BackgroundColor = chosePlayer.Color;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write($" {chosePlayer.Name} ");
+                    Console.ResetColor();
+                    Console.WriteLine($"|| their cards are worth: {chosePlayer.CountScore()} points. Their score right now is {chosePlayer.Score} pts.");
+                    activePlayersArray[activePlayersList.IndexOf(chosePlayer)] = $"{chosePlayer.Name}";
+                }
+
+                chosePlayer.ShowCards(false);
+            }
+            Console.WriteLine($"\nSelect player to give the {actionCard} :\n");
+            Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
+            return selectedPlayer;
+        }
     }
 }

@@ -122,6 +122,7 @@ while (isRunning)
         bool round = true;
         roundCount++;
         int activePlayersCount = playersList.Count;
+
         while (round)
         {
             foreach (Player player in playersList)
@@ -134,6 +135,7 @@ while (isRunning)
                 while (playing)
                 {
                     GameUtility.TryClear();
+
                     Console.WriteLine($"\nRound {roundCount}.\n");
                     Console.BackgroundColor = player.Color;
                     Console.ForegroundColor = ConsoleColor.Black;
@@ -142,6 +144,7 @@ while (isRunning)
                     Console.WriteLine($"Cards in deck: {deck.CardDeck.Count} || cards in discard pile: {deck.DiscardPile.Count}");
                     Console.WriteLine($"\nYour cards: {(player.CountScore() > 0 ? $"(worth {player.CountScore()} pts.)" : "")}\n");
                     player.ShowCards(true);
+
                     if (scoreBoard)
                     {
                         GameUtility.ShowScoreBoard(true, playersList);
@@ -155,6 +158,7 @@ while (isRunning)
                         }
                         else { othersCards = false; }
                     }
+
                     string[] mainOptions = ["Draw", "Stay", "Other players cards", "Score board", "Quit"];
                     switch (GameUtility.NavMenuKeys(mainOptions, true))
                     {
@@ -229,6 +233,7 @@ while (isRunning)
                         Console.WriteLine($"Cards in deck: {deck.CardDeck.Count} || cards in discard pile: {deck.DiscardPile.Count}");
                         Console.WriteLine($"\nYour cards: {(player.CountScore() > 0 ? $"(worth {player.CountScore()} pts.)" : "")}\n");
                         player.ShowCards(true);
+
                         if (scoreBoard)
                         {
                             GameUtility.ShowScoreBoard(true, playersList);
