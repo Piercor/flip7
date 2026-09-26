@@ -118,34 +118,7 @@ public static class GameUtility
             case CardType.Double: player.PlayerCards.Add(drawnCard); return;
             case CardType.SecondChance:
 
-                List<Player> activePlayers = playersList.Where(p => p != player && p.Active).ToList();
-
-                if (!player.PlayerCards.Any(c => c.CardType == CardType.SecondChance))
-                {
-                    player.PlayerCards.Add(drawnCard);
-                }
-                else if (activePlayers.Any(p => !p.PlayerCards.Any(c => c.CardType == CardType.SecondChance)))
-                {
-                    TryClear();
-                    Console.WriteLine("Unfortunately, you already have a Second Chance.\nYou now have to choose another player to give it to.");
-                    Console.Write(" ");
-
-                    Player playerToGiveSecondChance = SelectedPlayer(player, "second chance", playersList);
-                    playerToGiveSecondChance.PlayerCards.Add(drawnCard);
-
-                    TryClear();
-                    Console.WriteLine($"{playerToGiveSecondChance.Name} got your Second Chance!");
-                    Console.Write("Press any key to continue");
-                    Console.ReadKey(true);
-                }
-                else
-                {
-                    TryClear();
-                    Console.WriteLine($"Unfortunately, you have a Second Chance and nobody else\ncan have it, so you have to discard it!");
-                    Console.Write("Press any key to continue");
-                    Console.ReadKey(true);
-                    deck.DiscardPile.Add(drawnCard);
-                }
+                SpecialCards(CardType.SecondChance, player, deck, drawnCard, playersList);
 
                 return;
 
@@ -221,83 +194,14 @@ public static class GameUtility
 
             case CardType.Freeze:
 
-                deck.DiscardPile.Add(drawnCard);
-                Thread.Sleep(1000);
+                SpecialCards(CardType.Freeze, player, deck, drawnCard, playersList);
 
-                TryClear();
-                Console.WriteLine("\nF R E E Z E");
-
-                Console.WriteLine("\nSelect player to freeze:\n");
-
-                Player playerToFreeze = SelectedPlayer(player, "freeze", playersList);
-
-                TryClear();
-
-                playerToFreeze.Score += playerToFreeze.CountScore();
-
-                Console.WriteLine("\n");
-                Console.BackgroundColor = playerToFreeze.Color;
-                Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($"\n{playerToFreeze.Name}");
-                Console.ResetColor();
-                Console.WriteLine(" is now frozen for this round!");
-                Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
-                Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
-
-                playerToFreeze.EmptyPlayerCards(deck);
-                playerToFreeze.Active = false;
-
-                Console.Write("\nPress any key to continue. ");
-                Console.ReadKey(intercept: true);
                 return;
 
             case CardType.FlipThree:
 
-                deck.DiscardPile.Add(drawnCard);
-                Thread.Sleep(1000);
+                SpecialCards(CardType.FlipThree, player, deck, drawnCard, playersList);
 
-                TryClear();
-                Console.WriteLine("\nF L I P  3");
-
-                Player playerToFlip3 = SelectedPlayer(player, "flip 3", playersList);
-                bool flipping = true;
-                int flipped = 3;
-
-                while (flipping)
-                {
-                    TryClear();
-
-                    Console.WriteLine("");
-                    Console.BackgroundColor = playerToFlip3.Color;
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    Console.Write($"\n{playerToFlip3.Name}");
-                    Console.ResetColor();
-                    Console.WriteLine($" have to flip {flipped} {(flipped == 3 ? "card" : "more card") + (flipped > 1 ? "s." : ".")}");
-                    Console.WriteLine($"\n{playerToFlip3.Name}'s cards:\n");
-
-                    playerToFlip3.ShowCards(false);
-
-                    if (playerToFlip3.Active && flipped > 0)
-                    {
-                        DrawACard(playerToFlip3, deck, playersList); flipped--;
-                    }
-                    else
-                    {
-                        flipping = false;
-                        break;
-                    }
-
-                    if (playerToFlip3.Active && flipped > 0)
-                    {
-                        Console.Write("\nPress any key to flip next card. ");
-                        Console.ReadKey(intercept: true);
-                    }
-                    else if (playerToFlip3.Active)
-                    {
-                        Console.Write("\nPress any key to continue. ");
-                        Console.ReadKey(intercept: true);
-                    }
-                }
                 return;
         }
     }
@@ -417,6 +321,126 @@ public static class GameUtility
             Console.WriteLine($"\nSelect player to give the {actionCard}:\n");
             Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
             return selectedPlayer;
+        }
+    }
+
+    public static void SpecialCards(CardType cardType, Player player, Deck deck, Card drawnCard, List<Player> playersList)
+    {
+        switch (cardType)
+        {
+            case CardType.SecondChance:
+                List<Player> activePlayers = playersList.Where(p => p != player && p.Active).ToList();
+
+                if (!player.PlayerCards.Any(c => c.CardType == CardType.SecondChance))
+                {
+                    player.PlayerCards.Add(drawnCard);
+                }
+                else if (activePlayers.Any(p => !p.PlayerCards.Any(c => c.CardType == CardType.SecondChance)))
+                {
+                    TryClear();
+                    Console.WriteLine("Unfortunately, you already have a Second Chance.\nYou now have to choose another player to give it to.");
+                    Console.Write(" ");
+
+                    Player playerToGiveSecondChance = SelectedPlayer(player, "second chance", playersList);
+                    playerToGiveSecondChance.PlayerCards.Add(drawnCard);
+
+                    TryClear();
+                    Console.WriteLine($"{playerToGiveSecondChance.Name} got your Second Chance!");
+                    Console.Write("Press any key to continue");
+                    Console.ReadKey(true);
+                }
+                else
+                {
+                    TryClear();
+                    Console.WriteLine($"Unfortunately, you have a Second Chance and nobody else\ncan have it, so you have to discard it!");
+                    Console.Write("Press any key to continue");
+                    Console.ReadKey(true);
+                    deck.DiscardPile.Add(drawnCard);
+                }
+                return;
+
+            case CardType.Freeze:
+
+                deck.DiscardPile.Add(drawnCard);
+                Thread.Sleep(1000);
+
+                TryClear();
+                Console.WriteLine("\nF R E E Z E");
+
+                Console.WriteLine("\nSelect player to freeze:\n");
+
+                Player playerToFreeze = SelectedPlayer(player, "freeze", playersList);
+
+                TryClear();
+
+                playerToFreeze.Score += playerToFreeze.CountScore();
+
+                Console.WriteLine("\n");
+                Console.BackgroundColor = playerToFreeze.Color;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.Write($"\n{playerToFreeze.Name}");
+                Console.ResetColor();
+                Console.WriteLine(" is now frozen for this round!");
+                Console.WriteLine($"\n{playerToFreeze.Name}'s score this round is {playerToFreeze.CountScore()}");
+                Console.WriteLine($"{playerToFreeze.Name}'s total score is {playerToFreeze.Score}");
+
+                playerToFreeze.EmptyPlayerCards(deck);
+                playerToFreeze.Active = false;
+
+                Console.Write("\nPress any key to continue. ");
+                Console.ReadKey(intercept: true);
+
+                return;
+
+            case CardType.FlipThree:
+
+                deck.DiscardPile.Add(drawnCard);
+                Thread.Sleep(1000);
+
+                TryClear();
+                Console.WriteLine("\nF L I P  3");
+
+                Player playerToFlip3 = SelectedPlayer(player, "flip 3", playersList);
+                bool flipping = true;
+                int flipped = 3;
+
+                while (flipping)
+                {
+                    TryClear();
+
+                    Console.WriteLine("");
+                    Console.BackgroundColor = playerToFlip3.Color;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write($"\n{playerToFlip3.Name}");
+                    Console.ResetColor();
+                    Console.WriteLine($" have to flip {flipped} {(flipped == 3 ? "card" : "more card") + (flipped > 1 ? "s." : ".")}");
+                    Console.WriteLine($"\n{playerToFlip3.Name}'s cards:\n");
+
+                    playerToFlip3.ShowCards(false);
+
+                    if (playerToFlip3.Active && flipped > 0)
+                    {
+                        DrawACard(playerToFlip3, deck, playersList); flipped--;
+                    }
+                    else
+                    {
+                        flipping = false;
+                        break;
+                    }
+
+                    if (playerToFlip3.Active && flipped > 0)
+                    {
+                        Console.Write("\nPress any key to flip next card. ");
+                        Console.ReadKey(intercept: true);
+                    }
+                    else if (playerToFlip3.Active)
+                    {
+                        Console.Write("\nPress any key to continue. ");
+                        Console.ReadKey(intercept: true);
+                    }
+                }
+
+                return;
         }
     }
 }
