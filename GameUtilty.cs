@@ -342,21 +342,21 @@ public static class GameUtility
                 else if (activePlayers.Any(p => !p.PlayerCards.Any(c => c.CardType == CardType.SecondChance)))
                 {
                     TryClear();
-                    Console.WriteLine("Unfortunately, you already have a Second Chance.\nYou now have to choose another player to give it to.");
+                    Console.WriteLine("\nUnfortunately, you already have a Second Chance.\nYou now have to choose another player to give it to.");
                     Console.Write(" ");
 
                     Player playerToGiveSecondChance = SelectedPlayer(player, "second chance", playersList);
                     playerToGiveSecondChance.PlayerCards.Add(drawnCard);
 
                     TryClear();
-                    Console.WriteLine($"{playerToGiveSecondChance.Name} got your Second Chance!");
+                    Console.WriteLine($"\n{playerToGiveSecondChance.Name} got your Second Chance!");
                     Console.Write("Press any key to continue");
                     Console.ReadKey(true);
                 }
                 else
                 {
                     TryClear();
-                    Console.WriteLine($"Unfortunately, you have a Second Chance and nobody else\ncan have it, so you have to discard it!");
+                    Console.WriteLine($"\nUnfortunately, you have a Second Chance and nobody else\ncan have it, so you have to discard it!");
                     Console.Write("\nPress any key to continue");
                     Console.ReadKey(true);
                     deck.DiscardPile.Add(drawnCard);
