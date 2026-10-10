@@ -5,6 +5,7 @@ public class Player
     public string Name;
     public int Score;
     public List<Card> PlayerCards = new();
+    public List<Card> TempCards = new();
     public bool Active;
     public ConsoleColor Color;
     public Player(string name, int score)
@@ -81,6 +82,14 @@ public class Player
                 deck.DiscardPile.Add(card);
             }
         }
+        if (TempCards.Count > 0)
+        {
+            foreach (Card card in TempCards)
+            {
+                deck.DiscardPile.Add(card);
+            }
+        }
+        TempCards.Clear();
         PlayerCards.Clear();
     }
     // Method to show cards.
