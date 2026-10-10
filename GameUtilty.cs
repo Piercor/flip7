@@ -96,7 +96,7 @@ public static class GameUtility
     }
 
     // Method to draw a card.
-    public static void DrawACard(Player player, Deck deck, List<Player> playersList)
+    public static Card DrawACard(Deck deck)
     {
         Card? drawnCard = deck.CardDeck[RandomCard(deck)];
 
@@ -111,16 +111,15 @@ public static class GameUtility
         deck.CardDeck.Remove(drawnCard);
         deck.DeckReshuffle();
         Thread.Sleep(500);
+        return drawnCard;
+    }
+    public static void ResolveDrawnCard(Card drawnCard, Player player, Deck deck, List<Player> playersList, bool flipping)
+    {
 
         switch (drawnCard.CardType)
         {
             case CardType.Modifier: player.PlayerCards.Add(drawnCard); return;
             case CardType.Double: player.PlayerCards.Add(drawnCard); return;
-            case CardType.SecondChance:
-
-                SpecialCards(CardType.SecondChance, player, deck, drawnCard, playersList);
-
-                return;
 
             case CardType.Normal:
                 if (player.CheckBusted(drawnCard))
@@ -180,7 +179,6 @@ public static class GameUtility
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.WriteLine($"{rest.Name}: {rest.CountScore()} - Total score: {rest.Score}");
                         Console.ResetColor();
-
                         rest.Active = false;
                         rest.EmptyPlayerCards(deck);
                     }
@@ -192,13 +190,19 @@ public static class GameUtility
                 }
                 return;
 
-            case CardType.Freeze:
+            case CardType.SecondChance:
+
+                SpecialCards(CardType.SecondChance, player, deck, drawnCard, playersList);
+
+                return;
+
+            case CardType.Freeze when !flipping:
 
                 SpecialCards(CardType.Freeze, player, deck, drawnCard, playersList);
 
                 return;
 
-            case CardType.FlipThree:
+            case CardType.FlipThree when !flipping:
 
                 SpecialCards(CardType.FlipThree, player, deck, drawnCard, playersList);
 
@@ -353,7 +357,7 @@ public static class GameUtility
                 {
                     TryClear();
                     Console.WriteLine($"Unfortunately, you have a Second Chance and nobody else\ncan have it, so you have to discard it!");
-                    Console.Write("Press any key to continue");
+                    Console.Write("\nPress any key to continue");
                     Console.ReadKey(true);
                     deck.DiscardPile.Add(drawnCard);
                 }
@@ -420,7 +424,16 @@ public static class GameUtility
 
                     if (playerToFlip3.Active && flipped > 0)
                     {
-                        DrawACard(playerToFlip3, deck, playersList); flipped--;
+                        Card flippedCard = DrawACard(deck);
+                        if (flippedCard.CardType == CardType.Freeze || flippedCard.CardType == CardType.FlipThree)
+                        {
+                            playerToFlip3.TempCards.Add(flippedCard);
+                        }
+                        else
+                        {
+                            ResolveDrawnCard(flippedCard, playerToFlip3, deck, playersList, true);
+                        }
+                        flipped--;
                     }
                     else
                     {
