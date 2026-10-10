@@ -163,7 +163,9 @@ while (isRunning)
                     switch (GameUtility.NavMenuKeys(mainOptions, true))
                     {
                         case 0:
-                            GameUtility.DrawACard(player, deck, playersList);
+                            Card drawnCard = GameUtility.DrawACard(deck);
+                            GameUtility.ResolveDrawnCard(drawnCard, player, deck, playersList, false);
+
                             playing = false;
                             break;
 
@@ -219,12 +221,38 @@ while (isRunning)
                             }
                             break;
                     }
+
+                    List<Card> resolveCards = [.. player.TempCards];
+                    resolveCards.OrderBy(c => c.CardType != CardType.Freeze).ToList();
+                    foreach (Card tempCard in resolveCards)
+                    {
+                        GameUtility.ResolveDrawnCard(tempCard, player, deck, playersList, false);
+                        player.TempCards.Remove(tempCard);
+                    }
+                    resolveCards.Clear();
+
+                    foreach (Player otherPlayer in playersList)
+                    {
+                        if (otherPlayer.TempCards.Count > 0)
+                        {
+                            List<Card> resolveOtherCards = [.. otherPlayer.TempCards];
+                            resolveOtherCards.OrderBy(c => c.CardType != CardType.Freeze).ToList();
+                            foreach (Card tempCard in resolveOtherCards)
+                            {
+                                GameUtility.ResolveDrawnCard(tempCard, otherPlayer, deck, playersList, false);
+                                otherPlayer.TempCards.Remove(tempCard);
+                            }
+                            resolveOtherCards.Clear();
+                        }
+                    }
+
                 }
                 if (round)
                 {
                     if (player.Active)
                     {
                         GameUtility.TryClear();
+
                         Console.WriteLine($"\nRound {roundCount}.\n");
                         Console.BackgroundColor = player.Color;
                         Console.ForegroundColor = ConsoleColor.Black;
@@ -247,6 +275,7 @@ while (isRunning)
                             }
                             else { othersCards = false; }
                         }
+
                         if (activePlayersCount > 1)
                         {
                             string[] stayOrContinue = ["Next player turn"];
@@ -259,6 +288,7 @@ while (isRunning)
                     }
                 }
                 else { break; }
+
             }
             bool activePlayers = false;
             activePlayersCount = 0;
