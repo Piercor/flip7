@@ -34,7 +34,7 @@ public static class GameUtility
     }
 
     // Method to use arrows to select menu options 
-    public static int NavMenuKeys(string[] menuOptions, bool horizontal)
+    public static int NavMenuKeys(string[] menuOptions, bool horizontal, int playerIndex, bool playerSelection)
     {
         ConsoleKey? upLeft = ConsoleKey.UpArrow;
         ConsoleKey? downRight = ConsoleKey.DownArrow;
@@ -46,7 +46,7 @@ public static class GameUtility
         }
 
         bool inMenu = true;
-        int selectedIndex = 0;
+        int selectedIndex = !playerSelection ? 0 : playerIndex;
         int selectedOption = 0;
 
         while (inMenu)
@@ -301,7 +301,7 @@ public static class GameUtility
                 chosePlayer.ShowCards(false);
             }
             Console.WriteLine($"\nSelect player to {actionCard}:\n");
-            Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
+            Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false, actionCard == "flip 3" ? playersList.IndexOf(player) : playersList.IndexOf(playersList.First(p => p != player)), true)];
             return selectedPlayer;
         }
         else
@@ -324,7 +324,7 @@ public static class GameUtility
                 chosePlayer.ShowCards(false);
             }
             Console.WriteLine($"\nSelect player to give the {actionCard}:\n");
-            Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false)];
+            Player? selectedPlayer = activePlayersList[NavMenuKeys(activePlayersArray, false, 0, false)];
             return selectedPlayer;
         }
     }

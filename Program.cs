@@ -32,7 +32,7 @@ while (isRunning)
     bool inGame = false;
 
     string[] firstOptions = ["New game", "Quit"];
-    switch (GameUtility.NavMenuKeys(firstOptions, false))
+    switch (GameUtility.NavMenuKeys(firstOptions, false, 0, false))
     {
         case 0:
             bool preGame = true;
@@ -169,7 +169,7 @@ while (isRunning)
                     }
 
                     string[] mainOptions = ["Draw", "Stay", "Other players cards", "Score board", "Quit"];
-                    switch (GameUtility.NavMenuKeys(mainOptions, true))
+                    switch (GameUtility.NavMenuKeys(mainOptions, true, 0, false))
                     {
                         case 0:
                             Card drawnCard = GameUtility.DrawACard(deck);
@@ -181,7 +181,7 @@ while (isRunning)
                         case 1:
                             Console.WriteLine("");
                             string[] confirmStay = ["Stay", "Keep playing"];
-                            switch (GameUtility.NavMenuKeys(confirmStay, true))
+                            switch (GameUtility.NavMenuKeys(confirmStay, true, 0, false))
                             {
                                 case 0:
                                     player.Score += player.CountScore();
@@ -211,7 +211,7 @@ while (isRunning)
                         case 4:
                             Console.WriteLine("");
                             string[] quitOptions = ["To main menu", "To desktop", "Cancel"];
-                            switch (GameUtility.NavMenuKeys(quitOptions, true))
+                            switch (GameUtility.NavMenuKeys(quitOptions, true, 0, false))
                             {
                                 case 0:
                                     playing = false;
@@ -292,7 +292,7 @@ while (isRunning)
                         {
                             string[] stayOrContinue = ["Next player turn"];
 
-                            switch (GameUtility.NavMenuKeys(stayOrContinue, true))
+                            switch (GameUtility.NavMenuKeys(stayOrContinue, true, 0, false))
                             {
                                 case 0: continue;
                             }
