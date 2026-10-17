@@ -116,6 +116,7 @@ while (isRunning)
     bool scoreBoard = true;
     bool othersCards = false;
     int roundCount = 0;
+    int playerTurn = Convert.ToInt32(playersList.IndexOf(playersList[^1]));
 
     while (inGame)
     {
@@ -125,8 +126,16 @@ while (isRunning)
 
         while (round)
         {
-            foreach (Player player in playersList)
+            foreach (Player player in playersList
+            .Skip((GameUtility.SetPlayerTurn(playerTurn) + 1) % playersList.Count)
+            .Concat(playersList
+            .Take((GameUtility.SetPlayerTurn(playerTurn) + 1) % playersList.Count)))
             {
+                if (playersList.Count(p => p.Active) == 1)
+                {
+                    playerTurn = playersList.IndexOf(player);
+                }
+
                 bool playing = false;
                 if (player.Active == true)
                 {

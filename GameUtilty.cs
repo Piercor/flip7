@@ -187,6 +187,7 @@ public static class GameUtility
                     Console.ReadKey(intercept: true);
                     player.EmptyPlayerCards(deck);
                     player.Active = false;
+                    SetPlayerTurn(playersList.IndexOf(player));
                 }
                 return;
 
@@ -455,5 +456,9 @@ public static class GameUtility
 
                 return;
         }
+    }
+    public static int SetPlayerTurn(int playerIndex)
+    {
+        return playerIndex;
     }
 }
