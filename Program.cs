@@ -231,20 +231,23 @@ while (isRunning)
                     }
                     resolveCards.Clear();
 
-                    foreach (Player otherPlayer in playersList)
+                    do
                     {
-                        if (otherPlayer.TempCards.Count > 0)
+                        foreach (Player otherPlayer in playersList)
                         {
-                            List<Card> resolveOtherCards = [.. otherPlayer.TempCards];
-                            resolveOtherCards.OrderBy(c => c.CardType != CardType.Freeze).ToList();
-                            foreach (Card tempCard in resolveOtherCards)
+                            if (otherPlayer.TempCards.Count > 0)
                             {
-                                GameUtility.ResolveDrawnCard(tempCard, otherPlayer, deck, playersList, false);
-                                otherPlayer.TempCards.Remove(tempCard);
+                                List<Card> resolveOtherCards = [.. otherPlayer.TempCards];
+                                resolveOtherCards.OrderBy(c => c.CardType != CardType.Freeze).ToList();
+                                foreach (Card tempCard in resolveOtherCards)
+                                {
+                                    GameUtility.ResolveDrawnCard(tempCard, otherPlayer, deck, playersList, false);
+                                    otherPlayer.TempCards.Remove(tempCard);
+                                }
+                                resolveOtherCards.Clear();
                             }
-                            resolveOtherCards.Clear();
                         }
-                    }
+                    } while (playersList.Any(p => p.TempCards.Count > 0));
 
                 }
                 if (round)
